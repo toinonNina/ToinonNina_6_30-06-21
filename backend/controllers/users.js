@@ -73,9 +73,8 @@ exports.login = async(req, res, next) => {
 };
 
 //fonction qui permettra a l'utilisateur de supprimer son compte
-exports.delete = (req, res, next) => {
-
-    conn.query(`DELETE FROM user WHERE id = ?`, req.params.id, (error, result) => {
+/*exports.deleteUser = (req, res, next) => {
+    conn.query('DELETE FROM user WHERE id= ?', req.params.id, (error, result) => {
         if (error) {
             return res
                 .status(400)
@@ -84,4 +83,66 @@ exports.delete = (req, res, next) => {
         return res.status(200).json(result);
     });
 
+};*/
+
+exports.deleteUser = (req, res, next) => {
+    conn.query(
+        'DELETE FROM user WHERE id= ?', req.params.id, (error, result, field) => {
+            if (error) {
+                console.log(error);
+                return res.status(400).json(error);
+            }
+            console.log('Le compte a bien été supprimé !');
+            return res.status(200).json({ message: 'Votre compte a bien été supprimé !' });
+
+        }
+    );
+};
+
+
+//fonction qui permet d'afficher tous les utilisateurs
+exports.getAllUser = (req, res, next) => {
+    conn.query('SELECT id, username, email FROM user ', (error, result) => {
+        if (error) {
+            return res
+                .status(400)
+                .json({ error: "impossible d'afficher les listes des membres" });
+        }
+        return res.status(200).json(result);
+    });
+};;
+
+// fonction qui permet d'afficher un utilisateur
+exports.getOneUser = (req, res, next) => {
+    conn.query('SELECT * FROM user WHERE id =?', req.params.id, (error, result) => {
+        if (error) {
+            return res
+                .status(400)
+                .json({ error: "Impossible d'afficher cet Utilisateur" });
+        }
+        return res.status(200).json(result);
+    });
+};
+
+// fonction qui permet de modifier les informations de l'utilisateur
+exports.modifyUser = (req, res, next) => {
+    const email = req.body.email;
+    const username = req.body.username;
+    const id = req.params.id;
+    let passwords = req.body.password;
+    bcrypt.hash(passwords, 10)
+        .then((hash) => {
+            passwords = hash;
+            conn.query(
+                `UPDATE user SET email='${email}', username='${username}', password='${passwords}', isAdmin=${0}  WHERE id=${id}`, (error, results, fields) => {
+                    if (error) {
+                        return res.status(400).json(error);
+                    }
+                    return res.status(200).json({ message: 'Vos information ont bien été modifié !' });
+                }
+
+            );
+
+        })
+        .catch(error => res.status(500).json({ error: 'fuck' }));
 };
