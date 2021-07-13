@@ -4,6 +4,8 @@ const app = express();
 // demande POST gestion avec body-parser, afin d'extraire objet JSON 
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/user');
+const postRoutes = require('./routes/post');
+const commRoutes = require('./routes/comment');
 const conn = require("./connection");
 //import de dotenv pour gérer des variables cachées  pour sécuriser les infos admin
 require('dotenv').config();
@@ -19,4 +21,6 @@ app.use((req, res, next) => {
 });
 app.use(bodyParser.json());
 app.use('/api/auth', userRoutes);
+app.use('/api/post', postRoutes);
+app.use('/api/comm', commRoutes);
 module.exports = app;

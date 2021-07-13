@@ -24,7 +24,7 @@ exports.signup = (req, res, next) => {
                     console.log(err);
                     return res.status(400).json("erreur");
                 }
-                return res.status(201).json({ message: 'Votre compte a bien été crée !' }, );
+                return res.status(201).json({ message: 'Votre compte a bien été crée !' },);
             });
         })
         .catch(error => res.status(500).json({ error }));
@@ -32,7 +32,7 @@ exports.signup = (req, res, next) => {
 
 
 //fonction qui permet au utilisateur existant de se connecter
-exports.login = async(req, res, next) => {
+exports.login = async (req, res, next) => {
     //let status = '';
     //console.table([req.body.email, req.body.password]);
     if (req.body.email && req.body.password) {
