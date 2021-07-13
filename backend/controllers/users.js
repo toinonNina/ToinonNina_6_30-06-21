@@ -1,4 +1,3 @@
-const mysql = require("mysql2");
 const User = require("../models/User");
 const fs = require("fs");
 const conn = require("../connection");
@@ -73,18 +72,6 @@ exports.login = async(req, res, next) => {
 };
 
 //fonction qui permettra a l'utilisateur de supprimer son compte
-/*exports.deleteUser = (req, res, next) => {
-    conn.query('DELETE FROM user WHERE id= ?', req.params.id, (error, result) => {
-        if (error) {
-            return res
-                .status(400)
-                .json({ error: "L'utilisateur n'a pas pu être supprimé" });
-        }
-        return res.status(200).json(result);
-    });
-
-};*/
-
 exports.deleteUser = (req, res, next) => {
     conn.query(
         'DELETE FROM user WHERE id= ?', req.params.id, (error, result, field) => {
@@ -144,5 +131,5 @@ exports.modifyUser = (req, res, next) => {
             );
 
         })
-        .catch(error => res.status(500).json({ error: 'fuck' }));
+        .catch(error => res.status(500).json({ error }));
 };

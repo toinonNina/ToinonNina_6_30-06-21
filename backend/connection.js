@@ -9,6 +9,9 @@ const conn = mysql.createConnection({
     database: 'groupomania'
 });
 
+// Test de la connection
+
+
 conn.connect(
     function(err) {
         if (err) {
@@ -20,6 +23,10 @@ conn.connect(
         }
     });
 module.exports = conn;
+
+
+
+
 //Test confirmation de connection
 /*function readData() {
     conn.query('SELECT * FROM groupomania.user',
