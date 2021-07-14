@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 const auth = require('../middleware/auth');
-// Controle si l'email de l'utilisateur est déja enregistrer
+const authComm = require('../middleware/authComm');
 
 const userCtrl = require('../controllers/comment');
 
 
-
-router.post('/create', auth, userCtrl.createComment);
-router.delete('/delete/:id', auth, userCtrl.deleteComment);
-
-
+// Création d'un post 
+router.post('/create/:id', auth, userCtrl.createOneComment);
+router.get('/:id', auth, userCtrl.getCommentsfromPost);
+router.delete('/delete/:id', auth, authComm, userCtrl.deleteOneComment);
+router.post('/udapte/:id', auth, authComm, userCtrl.modifyOneComment);
 module.exports = router;

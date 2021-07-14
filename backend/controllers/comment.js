@@ -1,46 +1,46 @@
-const conn = require("../connection");
+const { sequelize } = require('../models/Post');
+const User = require("../models/User");
 const Comment = require("../models/comment");
 
-// Création d'un commentaire
-exports.createComment = (req, res, next) => {
 
-    date = new Date();
-    month = (date.getMonth() + 1) < 10 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1);
-    day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
 
-    const comment = new Comment({
-        user_id: req.user_id,
-        id_post: req.params.id,
-        content: req.body.content,
-        date_creation: date.getFullYear() + "-" + month + "-" + day + " " + date.getHours() + ":" + date.getMinutes(),
-        status: 1
-    });
+exports.getCommentsfromPost = (req, res, next) => {
+    console.log(req.params.id);
+    Comment.findAll({
+        where: { id: req.params.id },
+        order: sequelize.literal('(createdAt) DESC'),
+        include: [{ model: User }]
+    })
 
-    conn.query(`INSERT INTO comment SET ?`, comment, (error, result) => {
-        if (error) {
-            res.status(400).json({ error: 'Commentaire non crée' });
-        } else {
-            res.status(200).json({ result });
-        }
-    });
+        .then(comments => res.status(200).json(comments))
+        .catch(error => res.status(400).json({ error }));
 };
 
-// Suppression d'un commentaire
-exports.deleteComment = (req, res, next) => {
+exports.createOneComment = (req, res, next) => {
+    Comment.create({
+        id: req.params.id,
+        commentor_Id: req.body.userId,
+        content: req.body.content
+    })
+        .then(() => res.status(201).json({ message: 'Post crée' }))
+        .catch(error => res.status(400).json({ error }));
+};
 
-    let comment;
+exports.deleteOneComment = (req, res, next) => {
+    Comment.destroy({ where: { id: req.params.id } })
+        .then(() => res.status(200).json({ message: 'Commentaire supprimé' }))
+        .catch(error => res.status(400).json({ error }));
+};
 
-    conn.query(`SELECT * FROM comment WHERE id = ?`, req.params.id, (error, result) => {
-        comment = result[0];
-
-        if (comment.user_id === req.user_id || req.admin === 1) {
-            db.query(`DELETE FROM comment WHERE id = ?`, req.params.id, (error, result) => {
-                if (error) return res.status(400).json({ error: "Le commentaire n'a pas pu être supprimé" });
-                return res.status(200).json(result);
-            });
-
-        } else {
-            return res.status(403).json({ error: "Vous ne pouvez pas supprimer le commentaire !" });
-        }
-    });
+exports.modifyOneComment = (req, res, next) => {
+    Comment.update({
+        content: req.body.content
+    },
+        {
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(() => res.status(200).json({ message: 'Commentaire modifié' }))
+        .catch(error => res.status(400).json({ error }));
 };
