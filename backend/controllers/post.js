@@ -1,85 +1,73 @@
-const Post = require("../models/Post");
-const { Sequelize } = require('../models/Post');
-const { sequelize } = require('../models/Post');
-const User = require("../models/User");
+const Post = require("../models/post");
 const fs = require("fs");
-
+const conn = require("../connection");
+const { post } = require("../routes/post");
+require('dotenv').config();
 
 exports.createPost = (req, res, next) => {
-    Post.create({
-        creator_Id: req.body.id,
-        content: req.body.content,
-        Title: req.body.Title,
-        //imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    })
-        .then(() => res.status(201).json({ message: 'Post crée' }))
-        .catch(error => res.status(400).json({ error }));
-};
+    console.log(req.body);
+    let image = "";
 
-exports.getOnePost = (req, res, next) => {
-    Post.findAll({ where: { postId: req.params.id }, include: [{ model: User }] })
-        .then(post => res.status(200).json(post))
-        .catch(error => res.status(400).json({ error }));
-};
-exports.getAllPost = (req, res, next) => {
-    Post.findAll({
-        order: sequelize.literal('(createdAt) DESC'),
-        include: [{ model: User }]
-    })
-        .then(posts => res.status(200).json(posts))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.modifyOnePost = (req, res, next) => {
-    let PostObject;
-    console.log(req.params.id);
     if (req.file) {
-        PostObject = {
-            content: req.body.content,
-            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        };
-        Post.findAll({ where: { id: req.params.id } })
-            .then(post => {
-                const filename = post[0].imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {
-                    Post.update({
-                        ...PostObject
-                    },
-                        {
-                            where: {
-                                postId: req.params.id
-                            }
-                        })
-                        .then(() => res.status(200).json({ message: "Votre post a été modifié !" }))
-                        .catch(error => res.status(400).json({ message: "Je n'ais pas pu modifier votre Post" + error }));
-                });
-            })
-            .catch(error => console.log("Je n'ai pas pu trouvé votre Post", error));
-
-    } else {
-        Post.update({
-            content: req.body.content
-        },
-            {
-                where: {
-                    id: req.params.id
-                }
-            })
-            .then(() => res.status(200).json({ message: "Votre post a été modifié !" }))
-            .catch(error => res.status(400).json({ message: "Je n'ais pas pu modifier votre Post" + error }));
+        image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
     }
+
+    const post = new Post({
+        user_id: req.body.user_id,
+        title: req.body.title,
+        content: req.body.content,
+        image: image
+    });
+
+
+    conn.query(`INSERT INTO post SET ?`, post, (error, result) => {
+
+        if (error) {
+            return res.status(400).json({ error: error });
+        }
+        return res.status(201).json({ message: "Post crée!" });
+    });
 };
 
+
+
+
+// Modifier un post
+exports.modifyPost = (req, res, next) => {
+    let image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+    conn.query(`UPDATE post SET content = ?, title = ?, image= ?  WHERE id = ?`, [req.body.content, req.body.title, image, req.params.id], (error, result) => {
+        if (error) {
+            return res.status(400).json({ error: "Le post n'a pas pu être modifié" });
+        }
+        return res.status(200).json(result);
+    });
+};
+
+//delete un post
 exports.deletePost = (req, res, next) => {
-    Post.findAll({ where: { id: req.params.id } })
-        .then(post => {
-            const filename = post[0].imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
-                Post.destroy({ where: { id: req.params.id } })
-                    .then(() => res.status(200).json({ message: "Post supprimé ! " }))
-                    .catch(error => res.status(400).json({ error }));
-            });
-        })
-        .catch(error => res.status(500).json({ error }));
+    conn.query(`DELETE FROM post WHERE id =?`, req.params.id, (error, result) => {
+        if (error) {
+            return res.status(400).json({ error: "Le post n'a pas pu être supprimé" });
+        }
+        return res.status(200).json({ message: "Post supprimé!" });
+    });
 };
 
+//tout les posts
+exports.getAllPost = (req, res, next) => {
+    conn.query('SELECT * FROM post ORDER BY dateCreate DESC', (error, result) => {
+        if (error) {
+            return res.status(400).json({ error: "impossible d'afficher tous les post" });
+        }
+        return res.status(200).json(result);
+    });
+};
+// un post
+exports.getOnePost = (req, res, next) => {
+    conn.query('SELECT * FROM post WHERE id=?', req.params.id, (error, result) => {
+        if (error) {
+            return res.status(400).json({ error: "impossible d'afficher tous les post" });
+        }
+        return res.status(200).json(result);
+    });
+};

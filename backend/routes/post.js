@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-// Controle si l'email de l'utilisateur est déja enregistrer
+
 const auth = require('../middleware/auth');
-const authPost = require('../middleware/authPost');
-
-const multer = require('../middleware/multer-config');
+// Controle si l'email de l'utilisateur est déja enregistrer
 const userCtrl = require('../controllers/post');
-
+const multer = require('../middleware/multer-config');
 
 
 router.post('/create', auth, multer, userCtrl.createPost);
-router.post('/:id', auth, multer, authPost, userCtrl.modifyOnePost);
-router.delete('/:id', auth, userCtrl.deletePost);
-router.get('/:id', auth, userCtrl.getOnePost);
+router.post('/update/:id', auth, multer, userCtrl.modifyPost);
+router.delete('/delete/:id', auth, userCtrl.deletePost);
 router.get('/', auth, userCtrl.getAllPost);
+router.get('/:id', auth, userCtrl.getOnePost);
+
+
 module.exports = router;

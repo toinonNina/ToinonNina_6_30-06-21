@@ -1,24 +1,24 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <header id="header">
+      <img class="logo" alt="Vue logo" src="../src/assets/Groupomania-Logo.png" />
+    </header>
+
+    <router-view />
   </div>
 </template>
-
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
-
+#header {
+  text-align: center;
+}
 #nav {
-  padding: 30px;
+  padding: 0px;
 }
 
 #nav a {
@@ -28,5 +28,22 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+.logo {
+  width: 60%;
+  margin: 0;
+  text-align: right;
+}
+.navigation {
+  text-align: left;
+}
+.btn-primary {
+  background-color: #1956c8 !important;
+  font-weight: 600;
+}
+@media (min-width: 1024px) {
+  .logo {
+    width: 20%;
+  }
 }
 </style>
