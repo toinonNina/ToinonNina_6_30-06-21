@@ -1,46 +1,27 @@
-const { sequelize } = require('../models/Post');
-const User = require("../models/User");
+const conn = require("../connection");
 const Comment = require("../models/comment");
 
+// Création d'un commentaire
+exports.createComment = (req, res, next) => {
+    const comment = new Comment({
+        user_id: req.body.user_id,
+        post_id: req.params.id,
+        content: req.body.content,
+    });
 
-
-exports.getCommentsfromPost = (req, res, next) => {
-    console.log(req.params.id);
-    Comment.findAll({
-        where: { id: req.params.id },
-        order: sequelize.literal('(createdAt) DESC'),
-        include: [{ model: User }]
-    })
-
-        .then(comments => res.status(200).json(comments))
-        .catch(error => res.status(400).json({ error }));
+    conn.query(`INSERT INTO comment SET ?`, comment, (error, result) => {
+        if (error) {
+            res.status(400).json({ error: error });
+        } else {
+            res.status(200).json({ result });
+        }
+    });
 };
 
-exports.createOneComment = (req, res, next) => {
-    Comment.create({
-        id: req.params.id,
-        commentor_Id: req.body.userId,
-        content: req.body.content
-    })
-        .then(() => res.status(201).json({ message: 'Post crée' }))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.deleteOneComment = (req, res, next) => {
-    Comment.destroy({ where: { id: req.params.id } })
-        .then(() => res.status(200).json({ message: 'Commentaire supprimé' }))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.modifyOneComment = (req, res, next) => {
-    Comment.update({
-        content: req.body.content
-    },
-        {
-            where: {
-                id: req.params.id
-            }
-        })
-        .then(() => res.status(200).json({ message: 'Commentaire modifié' }))
-        .catch(error => res.status(400).json({ error }));
+// Suppression d'un commentaire
+exports.deleteComment = (req, res, next) => {
+    db.query(`DELETE FROM comment WHERE id = ?`, req.params.id, (error, result) => {
+        if (error) return res.status(400).json({ error: "Le commentaire n'a pas pu être supprimé" });
+        return res.status(200).json(result);
+    });
 };

@@ -1,88 +1,135 @@
 const User = require("../models/User");
+const fs = require("fs");
+const conn = require("../connection");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
+
+
+
+//fonction qui va crypté le mot de passe qui va le prendre et creer un nouveau user 
+//avec ce mot de passe et l'email et va l'enregistrer dans la base de donnée
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
-        .then(hash => {
-            User.create({
+        .then((hash) => {
+            const user = new User({
                 username: req.body.username,
                 email: req.body.email,
                 password: hash,
-                isAdmin: 2
-            })
-                .then(() => res.status(201).json({ message: 'Utilisateur crée !' }))
-                .catch(error => res.status(400).json({ error }));
+                isAdmin: 0,
+            });
+            conn.query('INSERT INTO user SET ?', user, (err, result, field) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(400).json("erreur");
+                }
+                return res.status(201).json({ message: 'Votre compte a bien été crée !' },);
+            });
         })
         .catch(error => res.status(500).json({ error }));
 };
 
-// Envoi et vérification de l'entrée utilisateur pour se connecter
-exports.login = (req, res, next) => {
-    User.findAll({ where: { email: req.body.email } })
-        .then(user => {
-            if (user[0] === undefined) {
-                return res.status(404).json({ error: "Utilisateur non trouvé" });
-            }
-            bcrypt.compare(req.body.password, user[0].password)
-                .then(valid => {
-                    if (!valid) {
-                        return res.status(401).json({ error: 'Mot de passe incorrect !' });
-                    }
-                    res.status(200).json({
-                        userId: user[0].id,
-                        token: jwt.sign({ userId: user[0].id, role: user[0].role },
-                            process.env.DB_TOKEN, { expiresIn: '24h' }
-                        )
+
+//fonction qui permet au utilisateur existant de se connecter
+exports.login = async (req, res, next) => {
+    //let status = '';
+    //console.table([req.body.email, req.body.password]);
+    if (req.body.email && req.body.password) {
+        conn.query('SELECT * FROM user WHERE email= ?', req.body.email, (error, results, fields) => {
+            if (results.length > 0) {
+                //bcrypt va comparé le mot de passe que l'utilisateur va entrer avec ce qui est déja enregistrer avec compare
+                bcrypt.compare(req.body.password, results[0].password)
+                    .then((valid) => { //valid est un boolean qui est d'abord sur true 
+                        //si c'est false il y a error
+                        if (!valid) {
+                            res.status(401).json({ message: 'Mot de passe incorrect' });
+                        } else {
+                            //confirmation User connecté
+                            console.log(req.body.email, "s'est connecté");
+                            //on décris le niveau d'acces du membre
+                            if (results[0].isAdmin === 1) {
+                                status = 'administrateur';
+                            } else {
+                                status = 'membre';
+                            }
+                            res.status(200).json({
+                                userId: results[0].id,
+                                email: results[0].email,
+                                status: status,
+                                token: jwt.sign({ userId: results[0].id, status: status }, process.env.DB_TOKEN, { expiresIn: '24h' })
+                            });
+
+                        }
                     });
-                })
-                .catch(error => res.status(500).json({ error }));
-        })
-        .catch(error => res.status(400).json({ error }));
-};
-
-
-// Récupération d'un seul utilisateur dans la table Users
-exports.getOneUser = (req, res, next) => {
-    User.findAll({ where: { id: req.params.id } })
-        .then(user => { res.status(200).json(user); })
-        .catch(error => res.status(404).json({ error }));
-};
-
-// Suppression d'un utilisateur de la base de données
-exports.deleteOneUser = (req, res, next) => {
-    User.destroy({ where: { userId: req.params.id } })
-        .then(() => res.status(200).json({ message: 'Utilisateur supprimé' }))
-        .catch(error => res.status(400).json({ error }));
-};
-
-// Modification d'un utilisateur de la base de données
-exports.modifyOneUser = (req, res, next) => {
-    User.update({
-        username: req.body.lastName,
-        email: req.body.email,
-    }, {
-        where: {
-            userId: req.params.id
-        }
-    })
-        .then(() => res.status(200).json({ message: "Utilisateur modifié" }))
-        .catch(error => res.status(400).json({ error }));
-};
-
-// Vérification de l'utilisateur pour accéder à l'app
-exports.authenticate = (req, res, next) => {
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, process.env.DB_TOKEN);
-    const userId = decodedToken.userId;
-    User.findAll({ where: { userId: userId } })
-        .then(user => {
-            if (user[0] == undefined) {
-                res.status(401).json({ message: "Vous ne pouvez pas accéder à cette page" });
             } else {
-                res.status(200).json({ message: "Ok" });
+                res.status(401).json({ message: 'Utilisateur ou mot de passe inconnu' });
             }
+        });
+    } else {
+        res.status(500).json({ message: "Entrez votre email et votre mot de passe" });
+    }
+};
+
+//fonction qui permettra a l'utilisateur de supprimer son compte
+exports.deleteUser = (req, res, next) => {
+    conn.query(
+        'DELETE FROM user WHERE id= ?', req.params.id, (error, result, field) => {
+            if (error) {
+                console.log(error);
+                return res.status(400).json(error);
+            }
+            console.log('Le compte a bien été supprimé !');
+            return res.status(200).json({ message: 'Votre compte a bien été supprimé !' });
+
+        }
+    );
+};
+
+
+//fonction qui permet d'afficher tous les utilisateurs
+exports.getAllUser = (req, res, next) => {
+    conn.query('SELECT id, username, email FROM user ', (error, result) => {
+        if (error) {
+            return res
+                .status(400)
+                .json({ error: "impossible d'afficher les listes des membres" });
+        }
+        return res.status(200).json(result);
+    });
+};;
+
+// fonction qui permet d'afficher un utilisateur
+exports.getOneUser = (req, res, next) => {
+    conn.query('SELECT * FROM user WHERE id =?', req.params.id, (error, result) => {
+        if (error) {
+            return res
+                .status(400)
+                .json({ error: "Impossible d'afficher cet Utilisateur" });
+        }
+        return res.status(200).json(result);
+    });
+};
+
+// fonction qui permet de modifier les informations de l'utilisateur
+exports.modifyUser = (req, res, next) => {
+    const email = req.body.email;
+    const username = req.body.username;
+    const id = req.params.id;
+    let passwords = req.body.password;
+    bcrypt.hash(passwords, 10)
+        .then((hash) => {
+            passwords = hash;
+            conn.query(
+                `UPDATE user SET email='${email}', username='${username}', password='${passwords}', isAdmin=${0}  WHERE id=${id}`, (error, results, fields) => {
+                    if (error) {
+                        return res.status(400).json(error);
+                    }
+                    return res.status(200).json({ message: 'Vos information ont bien été modifié !' });
+                }
+
+            );
+
         })
-        .catch(error => res.status(400).json({ error }));
+        .catch(error => res.status(500).json({ error }));
 };
