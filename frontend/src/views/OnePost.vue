@@ -3,8 +3,7 @@
     <h1>Bienvenue sur le réseau Social de Groupomania</h1>
     <Nav />
 
-    <CreatePost />
-    <AllPost />
+    <OnePost />
     <Footer />
   </div>
 </template>
@@ -14,14 +13,13 @@
 
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
-import CreatePost from "@/components/CreatePost.vue";
-import AllPost from "@/components/AllPost.vue";
+import OnePost from "@/components/OnePost.vue";
+
 export default {
   name: "Home",
   components: {
     Nav,
-    CreatePost,
-    AllPost,
+    OnePost,
     Footer,
   },
 };

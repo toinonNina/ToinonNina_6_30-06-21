@@ -30,6 +30,7 @@
 </template>
 <script>
 import Footer from "@/components/Footer.vue";
+import axios from "axios";
 
 export default {
   name: "Signup",
@@ -49,33 +50,22 @@ export default {
       const email = document.querySelector("#email").value;
       const password = document.querySelector("#password").value;
       const username = document.querySelector("#username").value;
-      let user = JSON.stringify({
+      let users = {
         email: email,
         password: password,
         username: username,
-      });
+      };
       // Verifie que utilisateur a bien remplie tout les champs
-      if (user.email == "" || user.password == "" || user.username == "") {
-        user = {
+      if (users.email == "" || users.password == "" || users.username == "") {
+        users = {
           userVerification: false,
         };
       } // Permet d'envoyer les information pour la creation d'un profil
-
-      fetch("http://localhost:3000/api/auth/signup", {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      })
-        .then((res) => {
-          if (res.status == 201) {
-            window.location.href = "http://localhost:8080/#/";
-          } else {
-            res.json().then((data) => {
-              this.errorMessage = data.message;
-            });
-          }
+      axios
+        .post("http://localhost:3000/api/auth/signup", users)
+        .then((response) => {
+          console.log(response);
+          this.$router.push("/");
         })
         .catch((error) => {
           console.log(error);

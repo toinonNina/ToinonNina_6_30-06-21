@@ -24,7 +24,7 @@ exports.signup = (req, res, next) => {
                     console.log(err);
                     return res.status(400).json("erreur");
                 }
-                return res.status(201).json({ message: 'Votre compte a bien été crée !' },);
+                return res.status(201).json({ message: 'Votre compte a bien été crée !' }, );
             });
         })
         .catch(error => res.status(500).json({ error }));
@@ -32,7 +32,7 @@ exports.signup = (req, res, next) => {
 
 
 //fonction qui permet au utilisateur existant de se connecter
-exports.login = async (req, res, next) => {
+exports.login = async(req, res, next) => {
     //let status = '';
     //console.table([req.body.email, req.body.password]);
     if (req.body.email && req.body.password) {
@@ -56,8 +56,9 @@ exports.login = async (req, res, next) => {
                             res.status(200).json({
                                 userId: results[0].id,
                                 email: results[0].email,
-                                status: status,
-                                token: jwt.sign({ userId: results[0].id, status: status }, process.env.DB_TOKEN, { expiresIn: '24h' })
+                                username: results[0].username,
+                                isAdmin: results[0].isAdmin,
+                                token: jwt.sign({ userId: results[0].id, username: results[0].username, isAdmin: results[0].isAdmin }, process.env.DB_TOKEN, { expiresIn: '24h' })
                             });
 
                         }

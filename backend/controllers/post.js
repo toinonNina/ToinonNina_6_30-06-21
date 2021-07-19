@@ -34,7 +34,7 @@ exports.createPost = (req, res, next) => {
 
 // Modifier un post
 exports.modifyPost = (req, res, next) => {
-    let image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+
     conn.query(`UPDATE post SET content = ?, title = ?, image= ?  WHERE id = ?`, [req.body.content, req.body.title, image, req.params.id], (error, result) => {
         if (error) {
             return res.status(400).json({ error: "Le post n'a pas pu être modifié" });
@@ -55,7 +55,8 @@ exports.deletePost = (req, res, next) => {
 
 //tout les posts
 exports.getAllPost = (req, res, next) => {
-    conn.query('SELECT * FROM post ORDER BY dateCreate DESC', (error, result) => {
+
+    conn.query('SELECT post.id, content, image, title, user_id, dateCreate, isAdmin, username  FROM post INNER JOIN user ON user.id = post.user_id ORDER BY dateCreate DESC', (error, result) => {
         if (error) {
             return res.status(400).json({ error: "impossible d'afficher tous les post" });
         }
@@ -64,9 +65,11 @@ exports.getAllPost = (req, res, next) => {
 };
 // un post
 exports.getOnePost = (req, res, next) => {
-    conn.query('SELECT * FROM post WHERE id=?', req.params.id, (error, result) => {
+
+
+    conn.query('SELECT * FROM post WHERE post.id=? ', req.params.id, (error, result) => {
         if (error) {
-            return res.status(400).json({ error: "impossible d'afficher tous les post" });
+            return res.status(400).json({ error: "impossible d'afficher un  post" });
         }
         return res.status(200).json(result);
     });

@@ -1,6 +1,7 @@
 const express = require('express');
 
 const app = express();
+const path = require('path');
 // demande POST gestion avec body-parser, afin d'extraire objet JSON 
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/user');
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 
 
 app.use(bodyParser.json());
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', userRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/comm', commRoutes);

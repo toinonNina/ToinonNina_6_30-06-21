@@ -27,6 +27,8 @@
 </template>
 <script>
 import Footer from "@/components/Footer.vue";
+import axios from "axios";
+
 export default {
   name: "Login",
   components: {
@@ -46,29 +48,25 @@ export default {
         password: password,
       };
 
-      fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      })
+      axios
+        .post("http://localhost:3000/api/auth/login", user, {
+          header: {
+            "Content-Type": "application/json",
+          },
+        })
         .then((res) => {
-          if (res.status == 200) {
-            res.json().then((data) => {
-              // Stock les données de user dans le localstorage
-              localStorage.setItem("token", data.token);
-              localStorage.setItem("user", JSON.stringify(data.userId));
-              window.location.href = "http://localhost:8080/#/Home";
-            });
-          } else {
-            res.json().then((data) => {
-              this.errorMessage = data.message;
-            });
+          console.log(res);
+          {
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("user", res.data.userId);
+            localStorage.setItem("username", res.data.username);
+            localStorage.setItem("isAdmin", res.data.isAdmin);
           }
+          this.$router.push("../Home");
         })
         .catch((error) => {
           console.log(error);
+          localStorage.clear();
         });
     },
   },
