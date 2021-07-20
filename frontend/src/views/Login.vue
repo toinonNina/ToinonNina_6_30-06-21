@@ -55,7 +55,6 @@ export default {
           },
         })
         .then((res) => {
-          console.log(res);
           {
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", res.data.userId);

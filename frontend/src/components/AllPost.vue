@@ -10,7 +10,7 @@
           <div class="dropdown-divider separation"></div>
           <p class="card-text price">{{ art.content}}</p>
           <div>
-            <img class="card-img-top product-img" width="300" height="250" :src="art.image" v-if="art.image != 0" />
+            <img class="card-img-top product-img" width="300" height="250" :alt="art.id" :src="art.image" v-if="art.image != 0" />
             <img class="card-img-top product-img" width="300" height="250" :src="art.image" v-else-if="imgoff" />
           </div>
           <div class="dropdown-divider separation"></div>
@@ -22,6 +22,7 @@
               <span class="">{{ datePost(art.dateCreate)}} </span>
             </li>
           </ul>
+          <!-- <a :href="`/post/${art.id}`">link</a>-->
           <router-link class="btn btn-primary name mt-5 text-center d-block " :to="`/post/${art.id}`">commentaires</router-link>
         </div>
       </div>
@@ -48,7 +49,7 @@ export default {
     this.getAllPost();
   },
   methods: {
-    getAllPost() {
+    async getAllPost() {
       const token = localStorage.getItem("token");
       this.userId = localStorage.getItem("user");
       this.isAdmin = localStorage.getItem("isAdmin");
@@ -59,7 +60,6 @@ export default {
           },
         })
         .then((res) => {
-          console.log(res);
           this.arts = res.data;
         })
         .catch((error) => {

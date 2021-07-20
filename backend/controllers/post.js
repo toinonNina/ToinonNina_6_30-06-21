@@ -34,7 +34,7 @@ exports.createPost = (req, res, next) => {
 
 // Modifier un post
 exports.modifyPost = (req, res, next) => {
-
+    let image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
     conn.query(`UPDATE post SET content = ?, title = ?, image= ?  WHERE id = ?`, [req.body.content, req.body.title, image, req.params.id], (error, result) => {
         if (error) {
             return res.status(400).json({ error: "Le post n'a pas pu être modifié" });
