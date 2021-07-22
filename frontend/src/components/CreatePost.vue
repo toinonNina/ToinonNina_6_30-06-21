@@ -51,10 +51,16 @@ export default {
       formData.append("content", content);
       formData.append("user_id", userId);
 
+      if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      } else {
+        axios.defaults.headers.common["Authorization"] = null;
+        this.$router.push("/");
+      }
+
       axios
         .post("http://localhost:3000/api/post/create", formData, {
           headers: {
-            "Content-Type": "application/json",
             Authorization: "bearer " + token,
           },
         })

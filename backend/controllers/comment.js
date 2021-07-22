@@ -20,14 +20,15 @@ exports.createComment = (req, res, next) => {
 
 // Suppression d'un commentaire
 exports.deleteComment = (req, res, next) => {
-    conn.query(`DELETE FROM comment WHERE id = ?`, req.body.id, (error, result) => {
+    let comment_id = req.params.id;
+    conn.query(`DELETE FROM comment WHERE id = ?`, comment_id, (error, result) => {
         if (error) return res.status(400).json({ error: "Le commentaire n'a pas pu être supprimé" });
         return res.status(200).json(result);
     });
 };
 
 exports.getAllComm = (req, res, next) => {
-    conn.query(`SELECT comment.id, comment.content, comment.dateCreate, comment.user_id, comment.post_id, post.user_id, user.username FROM comment INNER JOIN post ON post.id = comment.post_id left join user on user.id = comment.user_id WHERE post.id= ? ORDER BY dateCreate DESC`, req.params.id, (error, result) => {
+    conn.query(`SELECT comment.id, comment.content, comment.dateCreate, comment.user_id, comment.post_id, user.username FROM comment INNER JOIN post ON post.id = comment.post_id left join user on user.id = comment.user_id WHERE post.id= ? ORDER BY dateCreate DESC`, req.params.id, (error, result) => {
         if (error) return res.status(400).json({ error: "Les commentaires n'ont pas pu être affiché" });
         return res.status(200).json(result);
     });

@@ -10,16 +10,16 @@
           <div class="dropdown-divider separation"></div>
           <p class="card-text price">{{ art.content}}</p>
           <div>
-            <img class="card-img-top product-img" width="300" height="250" :alt="art.id" :src="art.image" v-if="art.image != 0" />
-            <img class="card-img-top product-img" width="300" height="250" :src="art.image" v-else-if="imgoff" />
+            <img class="card-img-top product-img" width="300" height="450" :alt="art.id" :src="art.image" v-if="art.image != 0" />
+            <img class="card-img-top product-img" width="300" height="450" :src="art.image" v-else-if="imgoff" />
           </div>
           <div class="dropdown-divider separation"></div>
           <ul class="navbar-nav mt-2 mt-lg-0 flex-row">
             <li class="nav-item active userinfo">
-              <span class="">{{art.username}}</span>
+              <span class="">Crée par {{art.username}}</span>
             </li>
             <li class="nav-item">
-              <span class="">{{ datePost(art.dateCreate)}} </span>
+              <span class=""> Le {{ datePost(art.dateCreate)}} </span>
             </li>
           </ul>
           <!-- <a :href="`/post/${art.id}`">link</a>-->
@@ -53,6 +53,14 @@ export default {
       const token = localStorage.getItem("token");
       this.userId = localStorage.getItem("user");
       this.isAdmin = localStorage.getItem("isAdmin");
+
+      if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      } else {
+        axios.defaults.headers.common["Authorization"] = null;
+        this.$router.push("/");
+      }
+
       axios
         .get("http://localhost:3000/api/post/", {
           headers: {
@@ -87,7 +95,7 @@ export default {
   width: 50%;
 }
 .product-img {
-  object-fit: cover;
+  object-fit: contain;
 }
 .userinfo {
   margin-right: 15px;
@@ -101,7 +109,7 @@ export default {
   }
   .product-img {
     width: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 20px 20px 0 0;
   }
 }

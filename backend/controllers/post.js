@@ -67,7 +67,7 @@ exports.getAllPost = (req, res, next) => {
 exports.getOnePost = (req, res, next) => {
 
 
-    conn.query('SELECT * FROM post WHERE post.id=? ', req.params.id, (error, result) => {
+    conn.query('SELECT post.id, content, image, title, user_id, dateCreate, isAdmin, username FROM post INNER JOIN user ON user.id = post.user_id WHERE post.id=? ', req.params.id, (error, result) => {
         if (error) {
             return res.status(400).json({ error: "impossible d'afficher un  post" });
         }

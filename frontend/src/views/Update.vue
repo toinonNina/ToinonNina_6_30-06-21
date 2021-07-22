@@ -16,7 +16,7 @@
           <label for="url" title="choisir une image" role="button"></label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
-        <button type="submit" class="btn btn-primary signup" @click="updateForm()">Publier</button><button type="submit" class="btn btn-primary signup ml-5" @click="deleteForm()">Supprimer</button>
+        <button type="submit" class="btn btn-primary signup" @click="updateForm()">Modifier</button><button type="submit" class="btn btn-primary signup ml-5" @click="deleteForm()">Supprimer</button>
       </form>
       <Footer />
     </div>
@@ -53,6 +53,13 @@ export default {
       const content = document.querySelector("#content").value;
       console.log(content);
       const idPost = this.$route.params.id;
+
+      if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      } else {
+        axios.defaults.headers.common["Authorization"] = null;
+        this.$router.push("/");
+      }
 
       const formData = new FormData();
       formData.append("image", this.file);

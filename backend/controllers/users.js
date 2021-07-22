@@ -73,9 +73,9 @@ exports.login = async(req, res, next) => {
 };
 
 //fonction qui permettra a l'utilisateur de supprimer son compte
-exports.deleteUser = (req, res, next) => {
+/*exports.deleteUser = (req, res, next) => {
     conn.query(
-        'DELETE FROM user WHERE id= ?', req.params.id, (error, result, field) => {
+        'DELETE FROM user WHERE id = ?', req.params.id, (error, result, field) => {
             if (error) {
                 console.log(error);
                 return res.status(400).json(error);
@@ -85,6 +85,14 @@ exports.deleteUser = (req, res, next) => {
 
         }
     );
+};*/
+
+exports.deleteUser = (req, res, next) => {
+    let user_id = req.params.id;
+    conn.query(`DELETE FROM user WHERE id = ?`, user_id, (error, result) => {
+        if (error) return res.status(400).json({ error: "Le user n'a pas pu être supprimé" });
+        return res.status(200).json(result);
+    });
 };
 
 
@@ -117,12 +125,12 @@ exports.modifyUser = (req, res, next) => {
     const email = req.body.email;
     const username = req.body.username;
     const id = req.params.id;
-    let passwords = req.body.password;
-    bcrypt.hash(passwords, 10)
+    let password = req.body.password;
+    bcrypt.hash(password, 10)
         .then((hash) => {
-            passwords = hash;
+            password = hash;
             conn.query(
-                `UPDATE user SET email='${email}', username='${username}', password='${passwords}', isAdmin=${0}  WHERE id=${id}`, (error, results, fields) => {
+                `UPDATE user SET email='${email}', username='${username}', password='${password}', isAdmin=${0}  WHERE id=${id}`, (error, results, fields) => {
                     if (error) {
                         return res.status(400).json(error);
                     }

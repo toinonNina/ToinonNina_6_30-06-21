@@ -9,10 +9,10 @@
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0 nav-menu">
           <li class="nav-item active">
-            <a class="nav-link" href="">Profil</a>
+            <router-link class="nav-link" :to="`/user/${userId}`">Profil</router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">Deconnexion</a>
+            <button class="nav-link" @click="Logout()">Déconnexion</button>
           </li>
           <li class="nav-item active">
             <router-link class="nav-link" to="/Home">Fil d'actualités</router-link>
@@ -26,6 +26,21 @@
 <script>
 export default {
   name: "Nav",
+  data() {
+    return {
+      userId: "",
+    };
+  },
+  mounted() {
+    this.userId = localStorage.getItem("user");
+    this.admin = localStorage.getItem("isAdmin");
+  },
+  methods: {
+    Logout() {
+      localStorage.clear();
+      this.$router.push("/");
+    },
+  },
 };
 </script>
 <style scoped>
@@ -36,5 +51,9 @@ img {
   img {
     width: 5%;
   }
+}
+button {
+  border: none !important;
+  background-color: #fff !important;
 }
 </style>
