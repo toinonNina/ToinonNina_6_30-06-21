@@ -16,14 +16,14 @@
           <div class="dropdown-divider separation"></div>
           <ul class="navbar-nav mt-2 mt-lg-0 flex-row">
             <li class="nav-item active userinfo">
-              <span class="">Crée par {{art.username}}</span>
+              <p>Crée par <span class="namecreat"> {{art.username}}</span> </p>
             </li>
             <li class="nav-item">
               <span class=""> Le {{ datePost(art.dateCreate)}} </span>
             </li>
           </ul>
           <!-- <a :href="`/post/${art.id}`">link</a>-->
-          <router-link class="btn btn-primary name mt-5 text-center d-block " :to="`/post/${art.id}`">commentaires</router-link>
+          <router-link class="btn btn-danger name mt-5 text-center d-block " :to="`/post/${art.id}`">commentaires</router-link>
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export default {
       }
 
       axios
-        .get("http://localhost:3000/api/post/", {
+        .get(this.$localhost + "api/post/", {
           headers: {
             Authorization: "bearer " + token,
           },
@@ -99,6 +99,9 @@ export default {
 }
 .userinfo {
   margin-right: 15px;
+}
+.namecreat {
+  color: #fd2d01;
 }
 @media (min-width: 320px) and (max-width: 1000px) {
   .card-product {

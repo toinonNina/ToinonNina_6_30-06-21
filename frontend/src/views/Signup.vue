@@ -15,7 +15,7 @@
         <input type="password" class="form-control" id="password" placeholder="Password" required />
       </div>
       <div class="error-message">{{ errorMessage }}</div>
-      <button type="submit" class="btn btn-primary signup" @click="createUser()">
+      <button type="submit" class="btn btn-danger signup" @click="createUser()">
         S'incrire
       </button>
     </form>
@@ -23,7 +23,7 @@
     <p class="dropdown-item encouragement">
       Vous n'êtes pas inscrit? Rejoignez nous !
     </p>
-    <router-link class="btn btn-primary" to="/">Se connecter</router-link>
+    <router-link class="btn btn-danger" to="/">Se connecter</router-link>
 
     <Footer />
   </main>
@@ -62,10 +62,11 @@ export default {
         };
       } // Permet d'envoyer les information pour la creation d'un profil
       axios
-        .post("http://localhost:3000/api/auth/signup", users)
-        .then((response) => {
-          console.log(response);
-          this.$router.push("/");
+        .post(this.$localhost + "api/auth/signup", users)
+        .then((res) => {
+          if (res) {
+            this.$router.push("/");
+          }
         })
         .catch((error) => {
           console.log(error);

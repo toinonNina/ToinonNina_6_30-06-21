@@ -19,13 +19,13 @@
             <div class="dropdown-divider separation"></div>
             <ul class="navbar-nav mt-2 mt-lg-0 flex-row">
               <li class="nav-item active userinfo">
-                <span class="">Crée par {{ art.username}}</span>
+                <p>Crée par <span class="namecreat">{{ art.username}}</span></p>
               </li>
               <li class="nav-item">
                 <span class="">Le {{ datePost(art.dateCreate)}} </span>
               </li>
             </ul>
-            <router-link class="btn btn-primary mt-5" :to="`/update/${art.id}`" v-if="userId == art.user_id || admin == 1">Modifier votre post</router-link>
+            <router-link class="btn btn-danger mt-5" :to="`/update/${art.id}`" v-if="userId == art.user_id || admin == 1">Modifier votre post</router-link>
 
           </div>
           <div class="container mb-5">
@@ -34,7 +34,7 @@
                 <div class="headings d-flex justify-content-between align-items-center mb-3">
                   <label for="contentcomm"></label>
                   <input type="text" class="form-control textarea " rows="2" id="contentcomm" v-model="comment" placeholder="votre commentaire..." required>
-                  <button type="submit" class="btn btn-primary signup ml-2" @click="PostComm()">commenter</button>
+                  <button type="submit" class="btn btn-danger signup ml-2" @click="PostComm()">commenter</button>
                 </div>
                 <div class="card p-3 idcomm" :id="comm.id" v-for="(comm,indx) in comms" :key="indx">
                   <div class="d-flex justify-content-between align-items-center">
@@ -104,14 +104,13 @@ export default {
       }
 
       axios
-        .get("http://localhost:3000/api/post/" + idPost, {
+        .get(this.$localhost + "api/post/" + idPost, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => {
-          console.log(res.data);
           this.arts = res.data;
         })
         .catch((error) => {
@@ -123,7 +122,7 @@ export default {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("user");
       const idPost = this.$route.params.id;
-      console.log(this.comment);
+
       const formcomm = {
         user_id: userId,
         content: this.comment,
@@ -132,7 +131,7 @@ export default {
 
       console.log(formcomm);
       axios
-        .post("http://localhost:3000/api/comm/create", formcomm, {
+        .post(this.$localhost + "api/comm/create", formcomm, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "bearer " + token,
@@ -140,7 +139,6 @@ export default {
         })
         .then((res) => {
           if (res) {
-            console.log(res);
             location.reload();
           }
         })
@@ -152,15 +150,14 @@ export default {
     getAllcomms() {
       const token = localStorage.getItem("token");
       const idPost = this.$route.params.id;
-      console.log(idPost);
+
       axios
-        .get("http://localhost:3000/api/comm/" + idPost, {
+        .get(this.$localhost + "api/comm/" + idPost, {
           headers: {
             Authorization: "bearer " + token,
           },
         })
         .then((res) => {
-          console.log(res.data);
           this.comms = res.data;
         })
         .catch((error) => {
@@ -171,16 +168,15 @@ export default {
       const token = localStorage.getItem("token");
       const div1 = document.querySelector(".idcomm");
       const comment_id = div1.getAttribute("id");
-      console.log(comment_id);
+
       axios
-        .delete("http://localhost:3000/api/comm/delete/" + comment_id, {
+        .delete(this.$localhost + "api/comm/delete/" + comment_id, {
           headers: {
             Authorization: "bearer " + token,
           },
         })
         .then((res) => {
           if (res) {
-            console.log(res);
             location.reload();
           }
         })
@@ -220,7 +216,10 @@ h1 {
 }
 .nametitle {
   font-size: 16px;
-  color: #1956c8;
+  color: #fd2d01;
+}
+.namecreat {
+  color: #fd2d01;
 }
 .smallsize {
   font-size: 14px;

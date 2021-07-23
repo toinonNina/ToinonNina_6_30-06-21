@@ -16,7 +16,7 @@
           <label for="url" title="choisir une image" role="button"></label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
-        <button type="submit" class="btn btn-primary signup" @click="updateForm()">Modifier</button><button type="submit" class="btn btn-primary signup ml-5" @click="deleteForm()">Supprimer</button>
+        <button type="submit" class="btn btn-danger signup" @click="updateForm()">Modifier</button><button type="submit" class="btn btn-danger signup ml-5" @click="deleteForm()">Supprimer</button>
       </form>
       <Footer />
     </div>
@@ -41,17 +41,12 @@ export default {
   methods: {
     onSelect() {
       this.file = this.$refs.file.files[0];
-      console.log(this.file);
     },
     updateForm() {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("user");
-      console.log(token);
-      console.log(userId);
       const title = document.querySelector("#title").value;
-      console.log(title);
       const content = document.querySelector("#content").value;
-      console.log(content);
       const idPost = this.$route.params.id;
 
       if (token) {
@@ -68,7 +63,7 @@ export default {
       formData.append("user_id", userId);
 
       axios
-        .post("http://localhost:3000/api/post/update/" + idPost, formData, {
+        .post(this.$localhost + "api/post/update/" + idPost, formData, {
           headers: {
             Authorization: "bearer " + token,
           },
@@ -86,7 +81,7 @@ export default {
       const token = localStorage.getItem("token");
       const idPost = this.$route.params.id;
       axios
-        .delete("http://localhost:3000/api/post/delete/" + idPost, {
+        .delete(this.$localhost + "api/post/delete/" + idPost, {
           headers: {
             Authorization: "bearer " + token,
           },

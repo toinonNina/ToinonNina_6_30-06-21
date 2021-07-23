@@ -12,16 +12,10 @@
             <h2 class="card-title name">{{user.username}}</h2>
 
             <div class="dropdown-divider separation"></div>
-            <p class="card-text price">Email: {{user.email}}</p>
-
-            <div class="dropdown-divider separation"></div>
             <div class="mt-5">
+
               <div class="form-group">
-                <label for="username">Votre nom et prénom</label>
-                <input type="text" class="form-control" id="username" placeholder="Gladys Castagné" required />
-              </div>
-              <div class="form-group">
-                <label for="email">Adresse Email</label>
+                <label for="email">Changer mon Adresse Email</label>
                 <input type="email" class="form-control" id="email" placeholder="email@example.com" required />
 
               </div>
@@ -31,8 +25,8 @@
                 <input type="password" class="form-control" id="password" placeholder="Password" required />
               </div>
             </div>
-            <button class="btn btn-primary" v-if="userId == user.id || admin == 1" @click="updateUser()">modifier son compte</button>
-            <button class="btn btn-primary" v-if="userId == user.id || admin == 1" @click="deleteuser()">Supprimer son compte</button>
+            <button class="btn btn-danger mr-5 mt-2" v-if="userId == user.id || admin == 1" @click="updateUser()">modifier mon compte</button>
+            <button class="btn btn-danger mt-2" v-if="userId == user.id || admin == 1" @click="deleteuser()">Supprimer mon compte</button>
 
           </div>
 
@@ -84,7 +78,7 @@ export default {
       }
 
       axios
-        .get("http://localhost:3000/api/auth/user/" + iduser, {
+        .get(this.$localhost + "api/auth/user/" + iduser, {
           headers: {
             Authorization: "bearer " + token,
           },
@@ -99,9 +93,9 @@ export default {
     deleteuser() {
       const token = localStorage.getItem("token");
       const idUser = this.$route.params.id;
-      console.log(idUser);
+
       axios
-        .delete("http://localhost:3000/api/auth/delete/" + idUser, {
+        .delete(this.$localhost + "api/auth/delete/" + idUser, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "bearer " + token,
@@ -109,9 +103,35 @@ export default {
         })
         .then((res) => {
           if (res) {
-            console.log("utilisateur supprimer");
             localStorage.clear();
             this.$router.push("../Signup");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    updateUser() {
+      const token = localStorage.getItem("token");
+      const idUser = this.$route.params.id;
+      const email = document.querySelector("#email").value;
+      const password = document.querySelector("#password").value;
+
+      let users = {
+        email: email,
+        password: password,
+      };
+
+      axios
+        .post(this.$localhost + "api/auth/update/" + idUser, users, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "bearer " + token,
+          },
+        })
+        .then((res) => {
+          if (res) {
+            this.$router.push("../Home");
           }
         })
         .catch((error) => {
@@ -133,7 +153,7 @@ h1 {
   width: 50%;
 }
 .name {
-  color: blue;
+  color: #fd2d01;
 }
 .userinfo {
   margin-right: 15px;

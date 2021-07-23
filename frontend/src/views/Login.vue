@@ -1,5 +1,5 @@
 <template>
-  <main id="app">
+  <main id="app" @onload="testconnection()">
     <h1>Bienvenue sur le réseau Social Groupomania</h1>
     <form class="px-4 py-3 signin">
       <div class="form-group">
@@ -12,7 +12,7 @@
         <input type="password" class="form-control" id="password" placeholder="Password" required />
       </div>
       <div class="error-message">{{ errorMessage }}</div>
-      <button type="submit" class="btn btn-primary signup" @click="loginUser()">
+      <button type="submit" class="btn btn-danger signup" @click="loginUser()">
         Se connecter
       </button>
     </form>
@@ -20,7 +20,7 @@
     <p class="dropdown-item encouragement">
       Vous n'êtes pas inscrit? Rejoignez nous !
     </p>
-    <router-link class="btn btn-primary" to="/Signup">S'INSCRIRE</router-link>
+    <router-link class="btn btn-danger" to="/Signup">S'INSCRIRE</router-link>
 
     <Footer />
   </main>
@@ -40,6 +40,18 @@ export default {
     };
   },
   methods: {
+    testconnection() {
+      axios
+        .get(this.$localhost + "api", {})
+        .then((res) => {
+          if (res) {
+            console.log("connection faite");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     loginUser() {
       const email = document.querySelector("#email").value;
       const password = document.querySelector("#password").value;
@@ -49,7 +61,7 @@ export default {
       };
 
       axios
-        .post("http://localhost:3000/api/auth/login", user, {
+        .post(this.$localhost + "api/auth/login", user, {
           header: {
             "Content-Type": "application/json",
           },
@@ -65,6 +77,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+
           localStorage.clear();
         });
     },

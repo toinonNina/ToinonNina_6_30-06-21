@@ -4,7 +4,8 @@
       <form class="px-4 py-3 Post" id="formpost" encType="multipart/form-data">
         <div class="form-group">
           <label for="title">Titre</label>
-          <input type="text" class="form-control" id="title" placeholder="votre titre" required />
+          <input type="text" class="form-control" id="title" v-model="title" placeholder="votre titre" required />
+          <span v-if="(!$v.title.required && $v.title.$dirty)">Veuillez ajouter un titre</span>
         </div>
         <div class="form-group">
           <label for="content">Texte</label>
@@ -14,7 +15,7 @@
           <label for="url" title="choisir une image" role="button"></label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
-        <button type="submit" class="btn btn-primary signup" @click="Postform()">Publier</button>
+        <button type="submit" class="btn btn-danger signup" @click="Postform()">Publier</button>
       </form>
     </div>
   </main>
@@ -22,12 +23,19 @@
 
 <script>
 import axios from "axios";
+import { required } from "vuelidate/lib/validators";
 export default {
   name: "CreatePost",
   data() {
     return {
+      title: "",
       file: "",
     };
+  },
+  validations: {
+    title: {
+      required,
+    },
   },
   methods: {
     onSelect() {
@@ -36,42 +44,42 @@ export default {
     },
 
     Postform() {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("user");
-      console.log(token);
-      console.log(userId);
-      const title = document.querySelector("#title").value;
-      console.log(title);
-      const content = document.querySelector("#content").value;
-      console.log(content);
+      this.submited = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user");
+        const title = document.querySelector("#title").value;
+        const content = document.querySelector("#content").value;
 
-      const formData = new FormData();
-      formData.append("image", this.file);
-      formData.append("title", title);
-      formData.append("content", content);
-      formData.append("user_id", userId);
+        const formData = new FormData();
+        formData.append("image", this.file);
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("user_id", userId);
 
-      if (token) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      } else {
-        axios.defaults.headers.common["Authorization"] = null;
-        this.$router.push("/");
+        if (token) {
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        } else {
+          axios.defaults.headers.common["Authorization"] = null;
+          this.$router.push("/");
+        }
+
+        axios
+          .post(this.$localhost + "api/post/create", formData, {
+            headers: {
+              Authorization: "bearer " + token,
+            },
+          })
+          .then((res) => {
+            if (res) {
+              window.location.reload();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
-
-      axios
-        .post("http://localhost:3000/api/post/create", formData, {
-          headers: {
-            Authorization: "bearer " + token,
-          },
-        })
-        .then((res) => {
-          if (res) {
-            window.location.reload();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     },
   },
 };
