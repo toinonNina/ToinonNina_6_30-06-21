@@ -4,17 +4,18 @@
       <form class="px-4 py-3 Post" id="formpost" encType="multipart/form-data">
         <div class="form-group">
           <label for="title">Titre</label>
-          <input type="text" class="form-control" id="title" v-model="title" placeholder="votre titre" required />
-          <span v-if="(!$v.title.required && $v.title.$dirty)">Veuillez ajouter un titre</span>
+          <input type="text" class="form-control" id="title" v-model="title" placeholder="votre titre" required /><br>
+          <span class="error" v-if="(!$v.title.required && $v.title.$dirty)">Veuillez ajouter un titre</span>
         </div>
         <div class="form-group">
           <label for="content">Texte</label>
-          <textarea class="form-control textarea " rows="3" id="content" placeholder="votre text..." required></textarea>
+          <textarea class="form-control textarea " rows="3" id="content" placeholder="votre text...ou ajouter une image "></textarea>
         </div>
         <div class="form-group">
           <label for="url" title="choisir une image" role="button"></label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
+        <span id="notfound" class="error"> </span>
         <button type="submit" class="btn btn-danger signup" @click="Postform()">Publier</button>
       </form>
     </div>
@@ -78,6 +79,8 @@ export default {
           })
           .catch((error) => {
             console.log(error);
+            document.getElementById("notfound").innerHTML =
+              "Une erreur est survenue, veuillez réessayer ultérieurement";
           });
       }
     },
@@ -87,5 +90,8 @@ export default {
 <style scoped>
 #post {
   text-align: left;
+}
+.error {
+  color: red;
 }
 </style>

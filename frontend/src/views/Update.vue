@@ -6,11 +6,12 @@
       <form class="px-4 py-3 Post" id="formpost" encType="multipart/form-data">
         <div class="form-group">
           <label for="title">Titre</label>
-          <input type="text" class="form-control" id="title" placeholder="votre titre" required />
+          <input type="text" class="form-control" v-model="title" id="title" placeholder="votre titre" required />
+          <span class="error" v-if="(!$v.title.required && $v.title.$dirty)">Veuillez ajouter un titre</span>
         </div>
         <div class="form-group">
           <label for="content">Texte</label>
-          <textarea class="form-control textarea " rows="3" id="content" placeholder="votre text..." required></textarea>
+          <textarea class="form-control textarea " rows="3" id="content" placeholder="Modifier votre text...ou modifier votre image"></textarea>
         </div>
         <div class="form-group">
           <label for="url" title="choisir une image" role="button"></label>
@@ -26,6 +27,7 @@
 import axios from "axios";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
+import { required } from "vuelidate/lib/validators";
 
 export default {
   name: "Update",
@@ -35,8 +37,14 @@ export default {
   },
   data() {
     return {
+      title: "",
       file: "",
     };
+  },
+  validations: {
+    title: {
+      required,
+    },
   },
   methods: {
     onSelect() {

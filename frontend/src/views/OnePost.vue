@@ -36,9 +36,11 @@
                   <input type="text" class="form-control textarea " rows="2" id="contentcomm" v-model="comment" placeholder="votre commentaire..." required>
                   <button type="submit" class="btn btn-danger signup ml-2" @click="PostComm()">commenter</button>
                 </div>
-                <div class="card p-3 idcomm" :id="comm.id" v-for="(comm,indx) in comms" :key="indx">
+                <span class="error" v-if="(!$v.comment.required && $v.comment.$dirty)">votre commentaire ne peux pas être vide</span>
+
+                <div class="card p-3 idcomm mt-4" :id="comm.id" v-for="(comm,indx) in comms" :key="indx">
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="user d-flex flex-row align-items-center"><span><small class="font-weight-bold nametitle ">{{comm.username}} a répondu </small></span> </div>
+                    <div class="user d-flex flex-row align-items-center"><span><small class="font-weight-bold  "><span class="nametitle">{{comm.username}} </span> a répondu </small></span> </div>
                   </div>
                   <div class="d-flex justify-content-between align-items-center px-3 contentcommentaire ">
                     <div class="user d-flex flex-row align-items-center"><span> <small class="font-weight-bold">{{comm.content}}</small></span> </div>
@@ -65,6 +67,7 @@
 import axios from "axios";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
+import { required } from "vuelidate/lib/validators";
 
 export default {
   name: "OnePost",
@@ -81,6 +84,11 @@ export default {
       userId: "",
       isAdmin: 0,
     };
+  },
+  validations: {
+    comment: {
+      required,
+    },
   },
   mounted() {
     this.getOnePost();
@@ -119,32 +127,36 @@ export default {
     },
 
     PostComm() {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("user");
-      const idPost = this.$route.params.id;
+      this.submited = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user");
+        const idPost = this.$route.params.id;
 
-      const formcomm = {
-        user_id: userId,
-        content: this.comment,
-        post_id: idPost,
-      };
+        const formcomm = {
+          user_id: userId,
+          content: this.comment,
+          post_id: idPost,
+        };
 
-      console.log(formcomm);
-      axios
-        .post(this.$localhost + "api/comm/create", formcomm, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "bearer " + token,
-          },
-        })
-        .then((res) => {
-          if (res) {
-            location.reload();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        console.log(formcomm);
+        axios
+          .post(this.$localhost + "api/comm/create", formcomm, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token,
+            },
+          })
+          .then((res) => {
+            if (res) {
+              location.reload();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
 
     getAllcomms() {
@@ -228,6 +240,9 @@ h1 {
 }
 .contentcommentaire {
   font-size: 18px;
+}
+.error {
+  color: red;
 }
 
 @media (min-width: 320px) and (max-width: 1000px) {

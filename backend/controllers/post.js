@@ -1,32 +1,33 @@
 const Post = require("../models/post");
-const fs = require("fs");
 const conn = require("../connection");
-const { post } = require("../routes/post");
 require('dotenv').config();
 
 exports.createPost = (req, res, next) => {
-    console.log(req.body);
     let image = "";
 
     if (req.file) {
         image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
     }
-
+    const title = req.body.title;
+    const content = req.body.content;
     const post = new Post({
         user_id: req.body.user_id,
-        title: req.body.title,
-        content: req.body.content,
+        title: title,
+        content: content,
         image: image
     });
+    if (!title && !content || !image) {
+        return res.status(400).json({ message: "Le titre ne peux pas être vide" });
+    } else {
 
+        conn.query(`INSERT INTO post SET ?`, post, (error, result) => {
 
-    conn.query(`INSERT INTO post SET ?`, post, (error, result) => {
-
-        if (error) {
-            return res.status(400).json({ error: error });
-        }
-        return res.status(201).json({ message: "Post crée!" });
-    });
+            if (error) {
+                return res.status(400).json({ error: error });
+            }
+            return res.status(201).json({ message: "Post crée!" });
+        });
+    }
 };
 
 

@@ -16,13 +16,15 @@
 
               <div class="form-group">
                 <label for="email">Changer mon Adresse Email</label>
-                <input type="email" class="form-control" id="email" placeholder="email@example.com" required />
-
+                <input type="email" class="form-control" v-model="email" id="email" placeholder="email@example.com" required /><br>
+                <span class="error" v-if="(!$v.email.required && $v.email.$dirty)">Veuillez ajouter un email valide</span>
               </div>
 
               <div class="form-group">
                 <label for="password">Changer mon Mot de passe</label>
-                <input type="password" class="form-control" id="password" placeholder="Password" required />
+                <input type="password" class="form-control" v-model="password" id="password" placeholder="Password" required /><br>
+                <span class="error" v-if="(!$v.password.required && $v.password.$dirty )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
+                <span class="error" v-if="(!$v.password.valid && !$v.password.minLength )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
               </div>
             </div>
             <button class="btn btn-danger mr-5 mt-2" v-if="userId == user.id || admin == 1" @click="updateUser()">modifier mon compte</button>
@@ -44,6 +46,12 @@
 import axios from "axios";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
+import {
+  required,
+  email,
+  minLength,
+  maxLength,
+} from "vuelidate/lib/validators";
 
 export default {
   name: "user",
@@ -57,7 +65,32 @@ export default {
       users: [],
       userId: "",
       isAdmin: 0,
+      email: "",
+      password: "",
     };
+  },
+  validations: {
+    email: {
+      required,
+      email,
+    },
+    password: {
+      required,
+      valid: function (value) {
+        const containsUppercase = /[A-Z]/.test(value);
+        const containsLowercase = /[a-z]/.test(value);
+        const containsNumber = /[0-9]/.test(value);
+        const containsSpecial = /[#?!@$%^&*-]/.test(value);
+        return (
+          containsUppercase &&
+          containsLowercase &&
+          containsNumber &&
+          containsSpecial
+        );
+      },
+      minLength: minLength(9),
+      maxLength: maxLength(19),
+    },
   },
   mounted() {
     this.getOneUser();
@@ -112,31 +145,35 @@ export default {
         });
     },
     updateUser() {
-      const token = localStorage.getItem("token");
-      const idUser = this.$route.params.id;
-      const email = document.querySelector("#email").value;
-      const password = document.querySelector("#password").value;
+      this.submited = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        const token = localStorage.getItem("token");
+        const idUser = this.$route.params.id;
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
 
-      let users = {
-        email: email,
-        password: password,
-      };
+        let users = {
+          email: email,
+          password: password,
+        };
 
-      axios
-        .post(this.$localhost + "api/auth/update/" + idUser, users, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "bearer " + token,
-          },
-        })
-        .then((res) => {
-          if (res) {
-            this.$router.push("../Home");
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        axios
+          .post(this.$localhost + "api/auth/update/" + idUser, users, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "bearer " + token,
+            },
+          })
+          .then((res) => {
+            if (res) {
+              this.$router.push("../Home");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
   },
 };
@@ -161,6 +198,9 @@ h1 {
 h1 {
   text-align: center;
   font-size: 18px;
+}
+.error {
+  color: red;
 }
 @media (min-width: 320px) and (max-width: 1000px) {
   .card-product {

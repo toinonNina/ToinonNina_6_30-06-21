@@ -1,20 +1,22 @@
 <template>
-  <main id="app" @onload="testconnection()">
+  <main id="app">
     <h1>Bienvenue sur le réseau Social Groupomania</h1>
     <form class="px-4 py-3 signin">
       <div class="form-group">
         <label for="email">Adresse Email</label>
-        <input type="email" class="form-control" id="email" placeholder="email@example.com" required />
-
+        <input type="email" class="form-control" v-model="email" id="email" placeholder="email@example.com" required /><br>
+        <span class="error" v-if="(!$v.email.required && $v.email.$dirty)">Veuillez ajouter un email valide</span>
       </div>
       <div class="form-group">
         <label for="password">Mot de passe</label>
-        <input type="password" class="form-control" id="password" placeholder="Password" required />
+        <input type="password" class="form-control" v-model="password" id="password" placeholder="Password" required /><br>
+        <span class="error" v-if="(!$v.password.required && $v.password.$dirty )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
+        <span class="error" v-if="(!$v.password.valid && !$v.password.minLength )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
       </div>
-      <div class="error-message">{{ errorMessage }}</div>
       <button type="submit" class="btn btn-danger signup" @click="loginUser()">
         Se connecter
-      </button>
+      </button><br>
+      <span id="notfound" class="error"> </span>
     </form>
     <div class="dropdown-divider separation"></div>
     <p class="dropdown-item encouragement">
@@ -28,7 +30,12 @@
 <script>
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
-
+import {
+  required,
+  email,
+  minLength,
+  maxLength,
+} from "vuelidate/lib/validators";
 export default {
   name: "Login",
   components: {
@@ -36,50 +43,67 @@ export default {
   },
   data() {
     return {
-      errorMessage: undefined,
+      email: "",
+      password: "",
     };
   },
-  methods: {
-    testconnection() {
-      axios
-        .get(this.$localhost + "api", {})
-        .then((res) => {
-          if (res) {
-            console.log("connection faite");
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+  validations: {
+    email: {
+      required,
+      email,
     },
+    password: {
+      required,
+      valid: function (value) {
+        const containsUppercase = /[A-Z]/.test(value);
+        const containsLowercase = /[a-z]/.test(value);
+        const containsNumber = /[0-9]/.test(value);
+        const containsSpecial = /[#?!@$%^&*-]/.test(value);
+        return (
+          containsUppercase &&
+          containsLowercase &&
+          containsNumber &&
+          containsSpecial
+        );
+      },
+      minLength: minLength(9),
+      maxLength: maxLength(19),
+    },
+  },
+  methods: {
     loginUser() {
-      const email = document.querySelector("#email").value;
-      const password = document.querySelector("#password").value;
-      const user = {
-        email: email,
-        password: password,
-      };
+      this.submited = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+        const user = {
+          email: email,
+          password: password,
+        };
 
-      axios
-        .post(this.$localhost + "api/auth/login", user, {
-          header: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {
-          {
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("user", res.data.userId);
-            localStorage.setItem("username", res.data.username);
-            localStorage.setItem("isAdmin", res.data.isAdmin);
-          }
-          this.$router.push("../Home");
-        })
-        .catch((error) => {
-          console.log(error);
-
-          localStorage.clear();
-        });
+        axios
+          .post(this.$localhost + "api/auth/login", user, {
+            header: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then((res) => {
+            {
+              localStorage.setItem("token", res.data.token);
+              localStorage.setItem("user", res.data.userId);
+              localStorage.setItem("username", res.data.username);
+              localStorage.setItem("isAdmin", res.data.isAdmin);
+            }
+            this.$router.push("../Home");
+          })
+          .catch((error) => {
+            console.log(error);
+            document.getElementById("notfound").innerHTML =
+              "Utilisateur non trouvé, veuillez vérifier vos identifiants";
+            localStorage.clear();
+          });
+      }
     },
   },
 };
@@ -102,6 +126,9 @@ export default {
 }
 .encouragement {
   padding: 0 !important;
+}
+.error {
+  color: red;
 }
 @media (max-width: 1024px) {
   .signin {

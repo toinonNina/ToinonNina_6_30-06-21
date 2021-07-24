@@ -3,10 +3,34 @@
     <header id="header">
       <img class="logo" alt="Vue logo" src="../src/assets/Groupomania-Logo.png" />
     </header>
-
+    <div id="conn-connected"></div>
     <router-view />
   </div>
 </template>
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      conn: "",
+    };
+  },
+  created() {
+    axios
+      .get(this.$localhost + "api/")
+
+      .then((response) => (this.conn = response.data))
+      //.catch(error => console.log('Il semblerait que la base de données ne soit pas connectée, réessayez plus tard'))
+      .catch((error) => {
+        console.log(error);
+        document.getElementById("conn-connected").innerHTML =
+          "/!\\ Attention la database n'est pas connectée veuillez réessayer ultérieurement";
+      });
+  },
+};
+</script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -40,6 +64,11 @@
 .btn-primary {
   background-color: #1956c8 !important;
   font-weight: 600;
+}
+#conn-connected {
+  text-align: center;
+  font-size: 24px;
+  color: red;
 }
 @media (min-width: 1024px) {
   .logo {

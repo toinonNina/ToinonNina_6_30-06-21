@@ -3,19 +3,23 @@ const Comment = require("../models/comment");
 
 // Création d'un commentaire
 exports.createComment = (req, res, next) => {
+    const content = req.body.content;
     const comment = new Comment({
         user_id: req.body.user_id,
         post_id: req.body.post_id,
         content: req.body.content,
     });
-
-    conn.query(`INSERT INTO comment SET ?`, comment, (error, result) => {
-        if (error) {
-            res.status(400).json({ error: error });
-        } else {
-            res.status(200).json({ result });
-        }
-    });
+    if (!content) {
+        return res.status(400).json({ message: "Le titre ne peux pas être vide" });
+    } else {
+        conn.query(`INSERT INTO comment SET ?`, comment, (error, result) => {
+            if (error) {
+                res.status(400).json({ error: error });
+            } else {
+                res.status(200).json({ result });
+            }
+        });
+    }
 };
 
 // Suppression d'un commentaire
