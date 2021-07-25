@@ -51,39 +51,43 @@ export default {
       this.file = this.$refs.file.files[0];
     },
     updateForm() {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("user");
-      const title = document.querySelector("#title").value;
-      const content = document.querySelector("#content").value;
-      const idPost = this.$route.params.id;
+      this.submited = true;
+      this.$v.$touch();
+      if (!this.$v.$invalid) {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user");
+        const title = document.querySelector("#title").value;
+        const content = document.querySelector("#content").value;
+        const idPost = this.$route.params.id;
 
-      if (token) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      } else {
-        axios.defaults.headers.common["Authorization"] = null;
-        this.$router.push("/");
+        if (token) {
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        } else {
+          axios.defaults.headers.common["Authorization"] = null;
+          this.$router.push("/");
+        }
+
+        const formData = new FormData();
+        formData.append("image", this.file);
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("user_id", userId);
+
+        axios
+          .post(this.$localhost + "api/post/update/" + idPost, formData, {
+            headers: {
+              Authorization: "bearer " + token,
+            },
+          })
+          .then((res) => {
+            if (res) {
+              this.$router.push("../Home");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
-
-      const formData = new FormData();
-      formData.append("image", this.file);
-      formData.append("title", title);
-      formData.append("content", content);
-      formData.append("user_id", userId);
-
-      axios
-        .post(this.$localhost + "api/post/update/" + idPost, formData, {
-          headers: {
-            Authorization: "bearer " + token,
-          },
-        })
-        .then((res) => {
-          if (res) {
-            this.$router.push("../Home");
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     },
     deleteForm() {
       const token = localStorage.getItem("token");

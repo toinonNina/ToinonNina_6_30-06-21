@@ -1,6 +1,10 @@
 const Post = require("../models/post");
 const conn = require("../connection");
 require('dotenv').config();
+const fs = require('fs'); // Avoir accès à des opérations liés aux systèmes de fichiers
+
+
+
 
 exports.createPost = (req, res, next) => {
     let image = "";
@@ -36,14 +40,86 @@ exports.createPost = (req, res, next) => {
 // Modifier un post
 exports.modifyPost = (req, res, next) => {
     let image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-    conn.query(`UPDATE post SET content = ?, title = ?, image= ?  WHERE id = ?`, [req.body.content, req.body.title, image, req.params.id], (error, result) => {
+
+    if (req.file) {
+        image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+    }
+    conn.query(`SELECT * FROM post WHERE id=?`, req.params.id, (error, rows, fields) => {
         if (error) {
-            return res.status(400).json({ error: "Le post n'a pas pu être modifié" });
+            return res.status(500).json({ error: "mysql" });
+        } else {
+            if (rows[0].image) {
+                const filename = rows[0].image.split("/images/")[1];
+                fs.unlink(`images/${filename}`, () => {
+                    conn.query(`UPDATE post SET content = ?, title = ?, image= ?  WHERE id = ?`, [req.body.content, req.body.title, image, req.params.id], (error, result) => {
+                        if (error) {
+                            return res.status(400).json({ error: "Le post n'a pas pu être modifié" });
+                        }
+                        return res.status(200).json(result);
+                    });
+                });
+            } else {
+                conn.query(`UPDATE post SET content = ?, title = ?, WHERE id = ?`, [req.body.content, req.body.title, image, req.params.id], (error, result) => {
+                    if (error) {
+                        return res.status(400).json({ error: "Le post n'a pas pu être modifié" });
+                    }
+                    return res.status(200).json(result);
+                });
+
+            }
+
+
+
         }
-        return res.status(200).json(result);
     });
 };
 
+
+
+
+
+exports.deletePost = (req, res, next) => {
+    conn.query(`SELECT * FROM post WHERE id=?`, req.params.id, (error, rows, fields) => {
+        if (error) {
+            return res.status(500).json({ error: "mysql" });
+        } else {
+            if (rows[0].image) {
+                const filename = rows[0].image.split("/images/")[1];
+                fs.unlink(`images/${filename}`, () => {
+
+                    conn.query(`DELETE FROM post WHERE id=?`, req.params.id, (error, rows, fields) => {
+                        if (error) {
+                            return res.status(500).json({ error: "impossible de supprimer" });
+                        } else {
+
+                            return res.status(200).json({ message: "Message supprimé !" });
+                        };
+                    });
+                });
+            } else {
+                conn.query(`DELETE FROM post WHERE id=?`, req.params.id, (error, rows, fields) => {
+                    if (error) {
+                        return res.status(500).json({ error: "impossible de supprimer" });
+                    } else {
+
+                        return res.status(200).json({ message: "Message supprimé !" });
+                    };
+                });
+            }
+
+        }
+    });
+
+};
+
+
+
+
+
+
+
+
+/*
 //delete un post
 exports.deletePost = (req, res, next) => {
     conn.query(`DELETE FROM post WHERE id =?`, req.params.id, (error, result) => {
@@ -52,7 +128,7 @@ exports.deletePost = (req, res, next) => {
         }
         return res.status(200).json({ message: "Post supprimé!" });
     });
-};
+};*/
 
 //tout les posts
 exports.getAllPost = (req, res, next) => {
