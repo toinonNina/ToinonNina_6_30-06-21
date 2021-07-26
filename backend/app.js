@@ -6,6 +6,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 //Import de helmet pour la sécurisation contre les injections
 const helmet = require("helmet");
+const sanitizeMiddleware = require("sanitize-middleware");
 
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
@@ -29,7 +30,8 @@ app.use((req, res, next) => {
     next();
 });
 
-
+// Sanitize Middleware (Inyection Attacks)
+app.use(sanitizeMiddleware());
 app.use(bodyParser.json());
 app.use(helmet());
 app.use('/images', express.static(path.join(__dirname, 'images')));

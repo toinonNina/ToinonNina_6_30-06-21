@@ -36,7 +36,7 @@
                   <input type="text" class="form-control textarea " rows="2" id="contentcomm" v-model="comment" placeholder="votre commentaire..." required>
                   <button type="submit" class="btn btn-danger signup ml-2" @click="PostComm()">commenter</button>
                 </div>
-                <span class="error" v-if="(!$v.comment.required && $v.comment.$dirty)">votre commentaire ne peux pas être vide</span>
+                <span class="error" v-if="(!$v.comment.required && $v.comment.$dirty)">votre commentaire ne peut pas être vide</span>
 
                 <div class="card p-3 idcomm mt-4" :id="comm.id" v-for="(comm,indx) in comms" :key="indx">
                   <div class="d-flex justify-content-between align-items-center">
