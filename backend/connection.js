@@ -3,8 +3,8 @@ require('dotenv').config();
 
 
 const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
+    host: process.env.DB_LOCALHOST,
+    user: process.env.DB_IDENTIFIANT,
     password: process.env.DB_PASSWORD,
     database: 'groupomania'
 });

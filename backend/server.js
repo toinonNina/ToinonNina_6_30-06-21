@@ -45,6 +45,8 @@ server.on('listening', () => {
 });
 // test port 3000
 app.get('/api', (req, res) => {
-    res.send('ça marche');
+    if (res) { res.send('Connection établie'); } else {
+        console.log("problème");
+    }
 });
 server.listen(port);

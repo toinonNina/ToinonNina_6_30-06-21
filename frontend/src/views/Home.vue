@@ -1,6 +1,8 @@
 <template>
   <div class="Home">
+    <h1>Bienvenue sur le réseau Social de Groupomania</h1>
     <Nav />
+
     <CreatePost />
     <AllPost />
     <Footer />
@@ -24,3 +26,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+h1 {
+  text-align: center;
+  font-size: 18px;
+}
+</style>

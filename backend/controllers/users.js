@@ -1,8 +1,8 @@
 const User = require("../models/User");
-const fs = require("fs");
 const conn = require("../connection");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const crypt = require('crypto-js');
 require('dotenv').config();
 
 
@@ -11,11 +11,12 @@ require('dotenv').config();
 //fonction qui va crypté le mot de passe qui va le prendre et creer un nouveau user 
 //avec ce mot de passe et l'email et va l'enregistrer dans la base de donnée
 exports.signup = (req, res, next) => {
+    const cryptoEmail = crypt.MD5(req.body.email).toString();
     bcrypt.hash(req.body.password, 10)
         .then((hash) => {
             const user = new User({
                 username: req.body.username,
-                email: req.body.email,
+                email: cryptoEmail,
                 password: hash,
                 isAdmin: 0,
             });
@@ -24,7 +25,7 @@ exports.signup = (req, res, next) => {
                     console.log(err);
                     return res.status(400).json("erreur");
                 }
-                return res.status(201).json({ message: 'Votre compte a bien été crée !' },);
+                return res.status(201).json({ message: 'Votre compte a bien été crée !' }, );
             });
         })
         .catch(error => res.status(500).json({ error }));
@@ -32,11 +33,12 @@ exports.signup = (req, res, next) => {
 
 
 //fonction qui permet au utilisateur existant de se connecter
-exports.login = async (req, res, next) => {
+exports.login = async(req, res, next) => {
+    const cryptoEmail = crypt.MD5(req.body.email).toString();
     //let status = '';
     //console.table([req.body.email, req.body.password]);
-    if (req.body.email && req.body.password) {
-        conn.query('SELECT * FROM user WHERE email= ?', req.body.email, (error, results, fields) => {
+    if (cryptoEmail && req.body.password) {
+        conn.query('SELECT * FROM user WHERE email= ?', cryptoEmail, (error, results, fields) => {
             if (results.length > 0) {
                 //bcrypt va comparé le mot de passe que l'utilisateur va entrer avec ce qui est déja enregistrer avec compare
                 bcrypt.compare(req.body.password, results[0].password)
@@ -46,7 +48,7 @@ exports.login = async (req, res, next) => {
                             res.status(401).json({ message: 'Mot de passe incorrect' });
                         } else {
                             //confirmation User connecté
-                            console.log(req.body.email, "s'est connecté");
+                            console.log(cryptoEmail, "s'est connecté");
                             //on décris le niveau d'acces du membre
                             if (results[0].isAdmin === 1) {
                                 status = 'administrateur';
@@ -56,8 +58,9 @@ exports.login = async (req, res, next) => {
                             res.status(200).json({
                                 userId: results[0].id,
                                 email: results[0].email,
-                                status: status,
-                                token: jwt.sign({ userId: results[0].id, status: status }, process.env.DB_TOKEN, { expiresIn: '24h' })
+                                username: results[0].username,
+                                isAdmin: results[0].isAdmin,
+                                token: jwt.sign({ userId: results[0].id, username: results[0].username, isAdmin: results[0].isAdmin }, process.env.DB_TOKEN, { expiresIn: '24h' })
                             });
 
                         }
@@ -71,19 +74,14 @@ exports.login = async (req, res, next) => {
     }
 };
 
-//fonction qui permettra a l'utilisateur de supprimer son compte
-exports.deleteUser = (req, res, next) => {
-    conn.query(
-        'DELETE FROM user WHERE id= ?', req.params.id, (error, result, field) => {
-            if (error) {
-                console.log(error);
-                return res.status(400).json(error);
-            }
-            console.log('Le compte a bien été supprimé !');
-            return res.status(200).json({ message: 'Votre compte a bien été supprimé !' });
 
-        }
-    );
+
+exports.deleteUser = (req, res, next) => {
+    let user_id = req.params.id;
+    conn.query(`DELETE FROM user WHERE id = ?`, user_id, (error, result) => {
+        if (error) return res.status(400).json({ error: "Le user n'a pas pu être supprimé" });
+        return res.status(200).json(result);
+    });
 };
 
 
@@ -113,23 +111,28 @@ exports.getOneUser = (req, res, next) => {
 
 // fonction qui permet de modifier les informations de l'utilisateur
 exports.modifyUser = (req, res, next) => {
-    const email = req.body.email;
-    const username = req.body.username;
+    const cryptoEmail = crypt.MD5(req.body.email).toString();
+    const email = cryptoEmail;
     const id = req.params.id;
-    let passwords = req.body.password;
-    bcrypt.hash(passwords, 10)
-        .then((hash) => {
-            passwords = hash;
-            conn.query(
-                `UPDATE user SET email='${email}', username='${username}', password='${passwords}', isAdmin=${0}  WHERE id=${id}`, (error, results, fields) => {
-                    if (error) {
-                        return res.status(400).json(error);
+    let password = req.body.password;
+    if (!email || !password) {
+        return res.status(400).json({ message: "les champs des formulaires ne doivent pas être vide" });
+    } else {
+        bcrypt.hash(password, 10)
+            .then((hash) => {
+
+                password = hash;
+                conn.query(
+                    `UPDATE user SET email='${email}', password='${password}', isAdmin=${0}  WHERE id=?`, id, (error, results, fields) => {
+                        if (error) {
+                            return res.status(400).json(error);
+                        }
+                        return res.status(200).json({ message: 'Vos information ont bien été modifié !' });
                     }
-                    return res.status(200).json({ message: 'Vos information ont bien été modifié !' });
-                }
 
-            );
+                );
 
-        })
-        .catch(error => res.status(500).json({ error }));
+            })
+            .catch(error => res.status(500).json({ error }));
+    }
 };

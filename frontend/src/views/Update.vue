@@ -1,32 +1,40 @@
 <template>
-  <main id="Post">
+  <div id="updatePost">
+    <Nav />
     <div>
+      <h2>Modifier votre Post</h2>
       <form class="px-4 py-3 Post" id="formpost" encType="multipart/form-data">
         <div class="form-group">
           <label for="title">Titre</label>
-          <input type="text" class="form-control" id="title" v-model="title" placeholder="votre titre" required /><br>
+          <input type="text" class="form-control" v-model="title" id="title" placeholder="votre titre" required />
           <span class="error" v-if="(!$v.title.required && $v.title.$dirty)">Veuillez ajouter un titre</span>
         </div>
         <div class="form-group">
           <label for="content">Texte</label>
-          <textarea class="form-control textarea " rows="3" id="content" placeholder="votre text...ou ajouter une image "></textarea>
+          <textarea class="form-control textarea " rows="3" id="content" placeholder="Modifier votre text...ou modifier votre image"></textarea>
         </div>
         <div class="form-group">
-          <label class="sr-only" for="image" title="image" role="button">image</label>
+          <label for="image" class="sr-only" title="image" role="button">images</label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
-        <span id="notfound" class="error"> </span>
-        <button type="submit" class="btn btn-danger signup" @click="Postform()">Publier</button>
+        <button type="submit" class="btn btn-danger signup" @click="updateForm()">Modifier</button><button type="submit" class="btn btn-danger signup ml-5" @click="deleteForm()">Supprimer</button>
       </form>
+      <Footer />
     </div>
-  </main>
+  </div>
 </template>
-
 <script>
 import axios from "axios";
+import Nav from "@/components/Nav.vue";
+import Footer from "@/components/Footer.vue";
 import { required } from "vuelidate/lib/validators";
+
 export default {
-  name: "CreatePost",
+  name: "Update",
+  components: {
+    Nav,
+    Footer,
+  },
   data() {
     return {
       title: "",
@@ -41,10 +49,8 @@ export default {
   methods: {
     onSelect() {
       this.file = this.$refs.file.files[0];
-      console.log(this.file);
     },
-
-    Postform() {
+    updateForm() {
       this.submited = true;
       this.$v.$touch();
       if (!this.$v.$invalid) {
@@ -52,12 +58,7 @@ export default {
         const userId = localStorage.getItem("user");
         const title = document.querySelector("#title").value;
         const content = document.querySelector("#content").value;
-
-        const formData = new FormData();
-        formData.append("image", this.file);
-        formData.append("title", title);
-        formData.append("content", content);
-        formData.append("user_id", userId);
+        const idPost = this.$route.params.id;
 
         if (token) {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -66,32 +67,55 @@ export default {
           this.$router.push("/");
         }
 
+        const formData = new FormData();
+        formData.append("image", this.file);
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("user_id", userId);
+
         axios
-          .post(this.$localhost + "api/post/create", formData, {
+          .post(this.$localhost + "api/post/update/" + idPost, formData, {
             headers: {
               Authorization: "bearer " + token,
             },
           })
           .then((res) => {
             if (res) {
-              window.location.reload();
+              this.$router.push("../Home");
             }
           })
           .catch((error) => {
             console.log(error);
-            document.getElementById("notfound").innerHTML =
-              "Une erreur est survenue, veuillez réessayer ultérieurement";
           });
       }
+    },
+    deleteForm() {
+      const token = localStorage.getItem("token");
+      const idPost = this.$route.params.id;
+      axios
+        .delete(this.$localhost + "api/post/delete/" + idPost, {
+          headers: {
+            Authorization: "bearer " + token,
+          },
+        })
+        .then((res) => {
+          if (res) {
+            this.$router.push("../Home");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
 </script>
 <style scoped>
-#post {
+#updatePost {
   text-align: left;
 }
-.error {
-  color: red;
+h2 {
+  padding: 20px;
+  font-size: 18px;
 }
 </style>

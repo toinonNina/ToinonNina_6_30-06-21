@@ -1,30 +1,23 @@
 <template>
   <div class="navigation">
-    <nav class="navbar mr-auto navbar-expand-lg navbar-light bg-light">
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarTogglerDemo01"
-        aria-controls="navbarTogglerDemo01"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+    <nav class="navbar navbar-expand-md navbar-light d-flex justify-content-between">
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div
-        class="collapse navbar-collapse flex-row-reverse"
-        id="navbarTogglerDemo01"
-      >
-        <ul class="navbar-nav mt-2 mt-lg-0">
+      <img src="../assets/icon.png" alt="groupomania logo" />
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0 nav-menu">
           <li class="nav-item active">
-            <a class="nav-link" href="#"
-              >Profil<span class="sr-only">(current)</span></a
-            >
+            <router-link class="nav-link" :to="`/user/${userId}`">Profil</router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#">Disabled</a>
+            <button class="nav-link" @click="Logout()">Déconnexion</button>
           </li>
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/Home">Fil d'actualités</router-link>
+          </li>
+
         </ul>
       </div>
     </nav>
@@ -33,7 +26,34 @@
 <script>
 export default {
   name: "Nav",
+  data() {
+    return {
+      userId: "",
+    };
+  },
+  mounted() {
+    this.userId = localStorage.getItem("user");
+    this.admin = localStorage.getItem("isAdmin");
+  },
+  methods: {
+    Logout() {
+      localStorage.clear();
+      this.$router.push("/");
+    },
+  },
 };
 </script>
 <style scoped>
+img {
+  width: 10%;
+}
+@media (min-width: 768px) {
+  img {
+    width: 5%;
+  }
+}
+button {
+  border: none !important;
+  background-color: #fff !important;
+}
 </style>
