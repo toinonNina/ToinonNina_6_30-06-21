@@ -114,22 +114,6 @@ exports.deletePost = (req, res, next) => {
 
 
 
-
-
-
-
-
-/*
-//delete un post
-exports.deletePost = (req, res, next) => {
-    conn.query(`DELETE FROM post WHERE id =?`, req.params.id, (error, result) => {
-        if (error) {
-            return res.status(400).json({ error: "Le post n'a pas pu être supprimé" });
-        }
-        return res.status(200).json({ message: "Post supprimé!" });
-    });
-};*/
-
 //tout les posts
 exports.getAllPost = (req, res, next) => {
 

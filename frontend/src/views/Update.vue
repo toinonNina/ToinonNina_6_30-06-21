@@ -14,7 +14,7 @@
           <textarea class="form-control textarea " rows="3" id="content" placeholder="Modifier votre text...ou modifier votre image"></textarea>
         </div>
         <div class="form-group">
-          <label for="url" title="choisir une image" role="button"></label>
+          <label for="image" class="sr-only" title="image" role="button">images</label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
         <button type="submit" class="btn btn-danger signup" @click="updateForm()">Modifier</button><button type="submit" class="btn btn-danger signup ml-5" @click="deleteForm()">Supprimer</button>

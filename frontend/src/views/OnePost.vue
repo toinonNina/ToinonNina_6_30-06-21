@@ -13,7 +13,7 @@
             <div class="dropdown-divider separation"></div>
             <p class="card-text price">{{ art.content}}</p>
             <div>
-              <img class="card-img-top product-img" width="300" height="450" :src="art.image" v-if="art.image != 0" />
+              <img class="card-img-top product-img" width="300" height="450" alt="imagespost" :src="art.image" v-if="art.image != 0" />
               <img class="card-img-top product-img" width="300" height="450" :src="art.image" v-else-if="imgoff" />
             </div>
             <div class="dropdown-divider separation"></div>
@@ -32,7 +32,7 @@
             <div class="row d-flex justify-content-center">
               <div class="col-md-10">
                 <div class="headings d-flex justify-content-between align-items-center mb-3">
-                  <label for="contentcomm"></label>
+                  <label for="contentcomm" title="contentcomm" class="sr-only">commentaire</label>
                   <input type="text" class="form-control textarea " rows="2" id="contentcomm" v-model="comment" placeholder="votre commentaire..." required>
                   <button type="submit" class="btn btn-danger signup ml-2" @click="PostComm()">commenter</button>
                 </div>
@@ -228,10 +228,10 @@ h1 {
 }
 .nametitle {
   font-size: 16px;
-  color: #fd2d01;
+  color: #8e1801;
 }
 .namecreat {
-  color: #fd2d01;
+  color: #8e1801;
 }
 .smallsize {
   font-size: 14px;

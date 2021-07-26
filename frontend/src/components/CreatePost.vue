@@ -12,7 +12,7 @@
           <textarea class="form-control textarea " rows="3" id="content" placeholder="votre text...ou ajouter une image "></textarea>
         </div>
         <div class="form-group">
-          <label for="url" title="choisir une image" role="button"></label>
+          <label class="sr-only" for="image" title="image" role="button">image</label>
           <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
         </div>
         <span id="notfound" class="error"> </span>

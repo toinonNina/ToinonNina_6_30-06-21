@@ -101,7 +101,7 @@ export default {
   margin-right: 15px;
 }
 .namecreat {
-  color: #fd2d01;
+  color: #8e1801;
 }
 @media (min-width: 320px) and (max-width: 1000px) {
   .card-product {
