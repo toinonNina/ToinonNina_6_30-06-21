@@ -16,7 +16,7 @@
         <label for="password">Mot de passe</label>
         <input type="password" class="form-control" v-model="password" id="password" placeholder="Password" required /><br>
         <span class="error" v-if="(!$v.password.required && $v.password.$dirty )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
-        <span class="error" v-if="(!$v.password.valid && !$v.password.minLength )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
+        <span class="error" v-if="(!$v.password.valid && !$v.password.minLength )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces,et 1 chiffres </span>
 
       </div>
       <button type="submit" class="btn btn-danger signup" @click="createUser()">
@@ -69,13 +69,7 @@ export default {
         const containsUppercase = /[A-Z]/.test(value);
         const containsLowercase = /[a-z]/.test(value);
         const containsNumber = /[0-9]/.test(value);
-        const containsSpecial = /[#?!@$%^&*-]/.test(value);
-        return (
-          containsUppercase &&
-          containsLowercase &&
-          containsNumber &&
-          containsSpecial
-        );
+        return containsUppercase && containsLowercase && containsNumber;
       },
       minLength: minLength(9),
       maxLength: maxLength(19),
@@ -106,9 +100,8 @@ export default {
         axios
           .post(this.$localhost + "api/auth/signup", users)
           .then((res) => {
-            if (res) {
-              this.$router.push("/");
-            }
+            console.log(res);
+            this.$router.push({ name: "Login" });
           })
           .catch((error) => {
             console.log(error);
