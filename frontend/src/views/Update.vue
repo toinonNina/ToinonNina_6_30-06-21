@@ -118,4 +118,8 @@ h2 {
   padding: 20px;
   font-size: 18px;
 }
+.Post {
+  margin-top: 45px;
+  margin-bottom: 125px;
+}
 </style>
