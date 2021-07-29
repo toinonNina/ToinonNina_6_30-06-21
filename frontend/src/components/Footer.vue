@@ -16,7 +16,7 @@ export default {
 </script>
 <style scoped>
 .footernav {
-  margin-top: 95px;
+  margin-top: 75px;
   background: #c30000;
   padding-top: 3rem;
   padding-bottom: 3rem;

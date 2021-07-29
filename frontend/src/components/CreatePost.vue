@@ -13,7 +13,7 @@
         </div>
         <div class="form-group">
           <label class="sr-only" for="image" title="image" role="button">image</label>
-          <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
+          <input type="file" accept=".png, .jpg, .jpeg, .gif, .webp" v-on:change="onSelect" ref="file" id="image" />
         </div>
         <span id="notfound" class="error"> </span>
         <button type="submit" class="btn btn-danger signup" @click="Postform()">Publier</button>

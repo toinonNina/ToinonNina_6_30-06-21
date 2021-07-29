@@ -187,7 +187,7 @@ h1 {
 .card-product {
   display: flex;
   border-radius: 20px 20px;
-  width: 50%;
+  width: 60%;
 }
 .name {
   color: #fd2d01;
@@ -202,9 +202,9 @@ h1 {
 .error {
   color: red;
 }
-@media (min-width: 320px) and (max-width: 1000px) {
+@media (min-width: 320px) and (max-width: 1600px) {
   .card-product {
-    margin: 90px auto auto auto;
+    margin: 80px auto auto auto;
     flex-direction: column;
     border-radius: 20px 20px;
     width: 80%;

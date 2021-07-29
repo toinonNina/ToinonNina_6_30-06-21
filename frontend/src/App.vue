@@ -21,7 +21,6 @@ export default {
       .get(this.$localhost + "api/")
 
       .then((response) => (this.conn = response.data))
-      //.catch(error => console.log('Il semblerait que la base de données ne soit pas connectée, réessayez plus tard'))
       .catch((error) => {
         console.log(error);
         document.getElementById("conn-connected").innerHTML =
@@ -49,7 +48,6 @@ export default {
   font-weight: bold;
   color: #2c3e50;
 }
-
 #nav a.router-link-exact-active {
   color: #42b983;
 }

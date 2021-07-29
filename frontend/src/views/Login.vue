@@ -58,13 +58,8 @@ export default {
         const containsUppercase = /[A-Z]/.test(value);
         const containsLowercase = /[a-z]/.test(value);
         const containsNumber = /[0-9]/.test(value);
-        const containsSpecial = /[#?!@$%^&*-]/.test(value);
-        return (
-          containsUppercase &&
-          containsLowercase &&
-          containsNumber &&
-          containsSpecial
-        );
+
+        return containsUppercase && containsLowercase && containsNumber;
       },
       minLength: minLength(9),
       maxLength: maxLength(19),
@@ -92,7 +87,6 @@ export default {
             {
               localStorage.setItem("token", res.data.token);
               localStorage.setItem("user", res.data.userId);
-              localStorage.setItem("username", res.data.username);
               localStorage.setItem("isAdmin", res.data.isAdmin);
             }
             this.$router.push("../Home");

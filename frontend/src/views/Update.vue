@@ -15,7 +15,7 @@
         </div>
         <div class="form-group">
           <label for="image" class="sr-only" title="image" role="button">images</label>
-          <input type="file" accept=".png, .jpg, .jpeg" v-on:change="onSelect" ref="file" id="image" />
+          <input type="file" accept=".png, .jpg, .jpeg, .gif, .webp" v-on:change="onSelect" ref="file" id="image" />
         </div>
         <button type="submit" class="btn btn-danger signup" @click="updateForm()">Modifier</button><button type="submit" class="btn btn-danger signup ml-5" @click="deleteForm()">Supprimer</button>
       </form>
@@ -117,5 +117,9 @@ export default {
 h2 {
   padding: 20px;
   font-size: 18px;
+}
+.Post {
+  margin-top: 45px;
+  margin-bottom: 125px;
 }
 </style>
