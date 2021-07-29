@@ -37,3 +37,14 @@ exports.getAllComm = (req, res, next) => {
         return res.status(200).json(result);
     });
 };
+
+exports.getOneComm = (req, res, next) => {
+
+
+    conn.query('SELECT comment.id, comment.content, user_id, isAdmin  FROM comment INNER JOIN user ON user.id = comment.user_id WHERE comment.id=? ', req.params.id, (error, result) => {
+        if (error) {
+            return res.status(400).json({ error: "impossible d'afficher ce commentaire" });
+        }
+        return res.status(200).json(result);
+    });
+};
