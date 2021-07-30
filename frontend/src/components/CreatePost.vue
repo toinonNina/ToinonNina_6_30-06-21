@@ -9,12 +9,13 @@
         </div>
         <div class="form-group">
           <label for="content">Texte</label>
-          <textarea class="form-control textarea " rows="3" id="content" placeholder="votre text...ou ajouter une image "></textarea>
+          <textarea class="form-control textarea " v-model="content" rows="3" id="content" placeholder="votre texte et image " required></textarea>
         </div>
         <div class="form-group">
           <label class="sr-only" for="image" title="image" role="button">image</label>
           <input type="file" accept=".png, .jpg, .jpeg, .gif, .webp" v-on:change="onSelect" ref="file" id="image" />
         </div>
+        <span class="error" v-if="(!$v.content.required && $v.content.$dirty)">Veuillez ajouter une image et un texte</span><br><br>
         <span id="notfound" class="error"> </span>
         <button type="submit" class="btn btn-danger signup" @click="Postform()">Publier</button>
       </form>
@@ -31,10 +32,14 @@ export default {
     return {
       title: "",
       file: "",
+      content: "",
     };
   },
   validations: {
     title: {
+      required,
+    },
+    content: {
       required,
     },
   },

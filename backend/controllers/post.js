@@ -20,7 +20,7 @@ exports.createPost = (req, res, next) => {
         content: content,
         image: image
     });
-    if (!title && !content || !image) {
+    if (!title && !content && !image) {
         return res.status(400).json({ message: "Le titre ne peux pas être vide" });
     } else {
 
