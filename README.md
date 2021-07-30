@@ -25,7 +25,7 @@ le ou la charg√©-e de communication Groupomania doit pouvoir afficher les derni√
 - Installer NodeJs et MySql.
 - creer un compte utilisateur mysql
 - Cloner le projet sur votre machine.
-- Dans le fichier .env.exemple, completer les variables d'environnement par votre mot de passe, votre identifiant root et votre localhost mysql. Il faudra aussi fournit un token.   Renommer le fichier en ".env " .
+- Dans le fichier .env.exemple, completer les variables d'environnement par votre mot de passe, votre identifiant  et votre localhost mysql. Il faudra aussi fournit un token.   Renommer le fichier en ".env " .
 
 ## Les technologies :
 
