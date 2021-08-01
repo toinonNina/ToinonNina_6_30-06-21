@@ -4,16 +4,16 @@
       <form class="px-4 py-3 Post" id="formpost" encType="multipart/form-data">
         <div class="form-group">
           <label for="title">Titre</label>
-          <input type="text" class="form-control" id="title" v-model="title" placeholder="votre titre" required /><br>
+          <input type="text" class="form-control" id="title" v-model="title" placeholder="votre titre" aria-required="true" required /><br>
           <span class="error" v-if="(!$v.title.required && $v.title.$dirty)">Veuillez ajouter un titre</span>
         </div>
         <div class="form-group">
           <label for="content">Texte</label>
-          <textarea class="form-control textarea " v-model="content" rows="3" id="content" placeholder="votre texte et image " required></textarea>
+          <textarea class="form-control textarea " v-model="content" rows="3" id="content" placeholder="votre texte et image " aria-required="true" required></textarea>
         </div>
         <div class="form-group">
           <label class="sr-only" for="image" title="image" role="button">image</label>
-          <input type="file" accept=".png, .jpg, .jpeg, .gif, .webp" v-on:change="onSelect" ref="file" id="image" />
+          <input type="file" accept=".png, .jpg, .jpeg, .gif, .webp" v-on:change="onSelect" ref="file" aria-required="true" id="image" />
         </div>
         <span class="error" v-if="(!$v.content.required && $v.content.$dirty)">Veuillez ajouter une image et un texte</span><br><br>
         <span id="notfound" class="error"> </span>

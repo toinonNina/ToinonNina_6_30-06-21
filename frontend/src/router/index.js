@@ -14,30 +14,30 @@ const routes = [{
         name: 'Signup',
 
         component: () =>
-            import ( /* webpackChunkName: "about" */ '../views/Signup.vue')
+            import ('../views/Signup.vue')
     }, {
         path: '/user/:id',
         name: 'user',
         component: () =>
-            import ( /* webpackChunkName: "about" */ '../views/user.vue')
+            import ('../views/user.vue')
     },
     {
         path: '/Home',
         name: 'Home',
         component: () =>
-            import ( /* webpackChunkName: "about" */ '../views/Home.vue')
+            import ('../views/Home.vue')
     },
     {
         path: '/post/:id',
         name: 'OnePost',
         component: () =>
-            import ( /* webpackChunkName: "about" */ '../views/OnePost.vue')
+            import ('../views/OnePost.vue')
     },
     {
         path: '/update/:id',
         name: 'Update',
         component: () =>
-            import ( /* webpackChunkName: "about" */ '../views/Update.vue')
+            import ('../views/Update.vue')
     }
 ];
 

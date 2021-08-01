@@ -13,8 +13,8 @@
             <div class="dropdown-divider separation"></div>
             <p class="card-text price">{{ art.content}}</p>
             <div>
-              <img class="card-img-top product-img" width="300" height="450" alt="imagespost" :src="art.image" v-if="art.image != 0" />
-              <img class="card-img-top product-img" width="300" height="450" :src="art.image" v-else-if="imgoff" />
+              <img class="card-img-top product-img" alt="imagespost" :src="art.image" v-if="art.image != 0" />
+              <img class="card-img-top product-img" :src="art.image" v-else-if="imgoff" />
             </div>
             <div class="dropdown-divider separation"></div>
             <ul class="navbar-nav mt-2 mt-lg-0 flex-row">
@@ -213,10 +213,11 @@ export default {
 <style scoped>
 .card-product {
   display: flex;
-  border-radius: 20px 20px;
+  width: 100%;
   width: 50%;
 }
 .product-img {
+  width: 100%;
   object-fit: contain;
 }
 .userinfo {
@@ -255,7 +256,6 @@ h1 {
   .product-img {
     width: 100%;
     object-fit: contain;
-    border-radius: 20px 20px 0 0;
   }
 }
 </style>

@@ -4,12 +4,12 @@
     <form class="px-4 py-3 signin">
       <div class="form-group">
         <label for="email">Adresse Email</label>
-        <input type="email" class="form-control" v-model="email" id="email" placeholder="email@example.com" required /><br>
+        <input type="email" class="form-control" v-model="email" id="email" placeholder="email@example.com" aria-required="true" required /><br>
         <span class="error" v-if="(!$v.email.required && $v.email.$dirty)">Veuillez ajouter un email valide</span>
       </div>
       <div class="form-group">
         <label for="password">Mot de passe</label>
-        <input type="password" class="form-control" v-model="password" id="password" placeholder="Password" required /><br>
+        <input type="password" class="form-control" v-model="password" id="password" placeholder="Password" aria-required="true" required /><br>
         <span class="error" v-if="(!$v.password.required && $v.password.$dirty )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
         <span class="error" v-if="(!$v.password.valid && !$v.password.minLength )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
       </div>
@@ -61,7 +61,7 @@ export default {
 
         return containsUppercase && containsLowercase && containsNumber;
       },
-      minLength: minLength(9),
+      minLength: minLength(8),
       maxLength: maxLength(19),
     },
   },
