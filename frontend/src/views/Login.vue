@@ -97,6 +97,9 @@ export default {
               "Utilisateur non trouvé, veuillez vérifier vos identifiants";
             localStorage.clear();
           });
+      } else {
+        document.getElementById("notfound").innerHTML =
+          "Utilisateur non trouvé, veuillez vérifier vos identifiants";
       }
     },
   },
