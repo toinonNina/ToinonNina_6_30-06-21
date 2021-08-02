@@ -28,6 +28,7 @@ import axios from "axios";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
 import { required } from "vuelidate/lib/validators";
+import VueJwtDecode from "vue-jwt-decode";
 
 export default {
   name: "Update",
@@ -55,7 +56,9 @@ export default {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("user");
+        const userId = VueJwtDecode.decode(
+          localStorage.getItem("token")
+        ).userId;
         const title = document.querySelector("#title").value;
         const content = document.querySelector("#content").value;
         const idPost = this.$route.params.id;

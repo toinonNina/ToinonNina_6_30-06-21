@@ -68,6 +68,7 @@ import axios from "axios";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
 import { required } from "vuelidate/lib/validators";
+import VueJwtDecode from "vue-jwt-decode";
 
 export default {
   name: "OnePost",
@@ -81,8 +82,8 @@ export default {
       arts: [],
       comms: [],
       imgoff: 0,
-      userId: "",
-      isAdmin: 0,
+      userId: VueJwtDecode.decode(localStorage.getItem("token")).userId,
+      admin: VueJwtDecode.decode(localStorage.getItem("token")).isAdmin,
     };
   },
   validations: {
@@ -93,14 +94,10 @@ export default {
   mounted() {
     this.getOnePost();
     this.getAllcomms();
-    this.userId = localStorage.getItem("user");
-    this.admin = localStorage.getItem("isAdmin");
   },
   methods: {
     getOnePost() {
       const token = localStorage.getItem("token");
-      this.userId = localStorage.getItem("user");
-      this.isAdmin = localStorage.getItem("isAdmin");
 
       const idPost = this.$route.params.id;
 
@@ -131,7 +128,9 @@ export default {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("user");
+        const userId = VueJwtDecode.decode(
+          localStorage.getItem("token")
+        ).userId;
         const idPost = this.$route.params.id;
 
         const formcomm = {

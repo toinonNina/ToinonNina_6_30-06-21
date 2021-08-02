@@ -9,7 +9,7 @@
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0 nav-menu">
           <li class="nav-item active">
-            <router-link class="nav-link" :to="`/user/${userId}`">Profil</router-link>
+            <router-link class="nav-link" :to="`/user/${usersid}`">Profil</router-link>
           </li>
           <li class="nav-item">
             <button class="nav-link" @click="Logout()">Déconnexion</button>
@@ -24,16 +24,14 @@
   </div>
 </template>
 <script>
+import VueJwtDecode from "vue-jwt-decode";
+
 export default {
   name: "Nav",
   data() {
     return {
-      userId: "",
+      usersid: VueJwtDecode.decode(localStorage.getItem("token")).userId,
     };
-  },
-  mounted() {
-    this.userId = localStorage.getItem("user");
-    this.admin = localStorage.getItem("isAdmin");
   },
   methods: {
     Logout() {
