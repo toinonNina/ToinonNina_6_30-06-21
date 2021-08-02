@@ -13,7 +13,7 @@
         <span class="error" v-if="(!$v.password.required && $v.password.$dirty )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
         <span class="error" v-if="(!$v.password.valid && !$v.password.minLength )">Mot de passe requis : 8 caractères minimun. Au moins 1 Majuscule, 1 minuscule. Sans espaces et 1 chiffres </span>
       </div>
-      <button type="submit" class="btn btn-danger signup" @click="loginUser()">
+      <button type="submit" class="btn btn-danger signup" v-on:click="loginUser()">
         Se connecter
       </button><br>
       <span id="notfound" class="error"> </span>
@@ -84,18 +84,13 @@ export default {
             },
           })
           .then((res) => {
-            {
-              localStorage.setItem("token", res.data.token);
-              localStorage.setItem("user", res.data.userId);
-              localStorage.setItem("isAdmin", res.data.isAdmin);
-            }
-            this.$router.push("../Home");
+            localStorage.setItem("token", res.data.token);
+            this.$router.push("/Home");
           })
           .catch((error) => {
             console.log(error);
             document.getElementById("notfound").innerHTML =
               "Utilisateur non trouvé, veuillez vérifier vos identifiants";
-            localStorage.clear();
           });
       } else {
         document.getElementById("notfound").innerHTML =

@@ -33,6 +33,7 @@
 </template>
 <script>
 import axios from "axios";
+import VueJwtDecode from "vue-jwt-decode";
 
 export default {
   name: "AllPost",
@@ -40,8 +41,8 @@ export default {
     return {
       arts: [],
       imgoff: 0,
-      userId: "",
-      isAdmin: 0,
+      usersid: VueJwtDecode.decode(localStorage.getItem("token")).userId,
+      isAdmin: VueJwtDecode.decode(localStorage.getItem("token")).isAdmin,
     };
   },
   mounted() {
@@ -50,8 +51,6 @@ export default {
   methods: {
     async getAllPost() {
       const token = localStorage.getItem("token");
-      this.userId = localStorage.getItem("user");
-      this.isAdmin = localStorage.getItem("isAdmin");
 
       if (token) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;

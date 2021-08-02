@@ -46,6 +46,8 @@
 import axios from "axios";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
+import VueJwtDecode from "vue-jwt-decode";
+
 import {
   required,
   email,
@@ -94,8 +96,8 @@ export default {
   },
   mounted() {
     this.getOneUser();
-    this.userId = localStorage.getItem("user");
-    this.admin = localStorage.getItem("isAdmin");
+    this.userId = VueJwtDecode.decode(localStorage.getItem("token")).userId;
+    this.admin = VueJwtDecode.decode(localStorage.getItem("token")).isAdmin;
   },
   methods: {
     getOneUser() {

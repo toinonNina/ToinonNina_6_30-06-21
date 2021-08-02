@@ -101,7 +101,7 @@ export default {
           .post(this.$localhost + "api/auth/signup", users)
           .then((res) => {
             console.log(res);
-            this.$router.push({ name: "Login" });
+            this.$router.push("/Login");
           })
           .catch((error) => {
             console.log(error);
